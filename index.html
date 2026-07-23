@@ -61,14 +61,13 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
         <div style="color:#f3ede0;font-size:clamp(18px,2.2vw,23px);letter-spacing:.22em;">28 · NOVIEMBRE · 2026</div>
         <div style="color:#e7dfce;font-size:clamp(16px,1.8vw,19px);letter-spacing:.12em;font-style:italic;">Los Naranjos, Sonsonate · El Salvador</div>
       </div>
-      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:6px;margin-top:2px;">
-        <img src="assets/novios.webp" alt="Adriana y Rogelio ilustrados" style="height:min(56vh,560px);max-width:88vw;object-fit:contain;filter:drop-shadow(0 20px 40px rgba(0,0,0,.45));">
-        <div style="text-align:center;margin-bottom:10px;animation:lukabob 5s ease-in-out infinite;">
-          <img src="assets/luka.webp" alt="Luka" style="width:clamp(120px,14vw,184px);height:clamp(120px,14vw,184px);object-fit:contain;filter:drop-shadow(0 10px 20px rgba(0,0,0,.45));">
-          <div style="font-family:'Great Vibes',cursive;font-size:26px;color:#fdf8ec;margin-top:-10px;text-shadow:0 2px 10px rgba(0,0,0,.6);">y Luka</div>
-        </div>
-      </div>
+      <img src="assets/novios.webp" alt="Adriana y Rogelio ilustrados" style="height:min(56vh,560px);max-width:88vw;object-fit:contain;filter:drop-shadow(0 20px 40px rgba(0,0,0,.45));">
+
       <button onClick="{{ next }}" style="margin-top:4px;padding:15px 36px;border-radius:999px;background:#3e5238;color:#f7f4ea;border:none;cursor:pointer;font-family:inherit;font-size:18px;letter-spacing:.12em;box-shadow:0 12px 28px rgba(0,0,0,.4);">Comenzar la historia ▸</button>
+      <div data-mhint style="display:flex;align-items:center;gap:9px;margin-top:2px;background:rgba(18,24,20,.5);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:9px 18px;color:#fdf8ec;font-size:16px;font-style:italic;box-shadow:0 8px 22px rgba(0,0,0,.4);transition:opacity .8s ease;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f2d69a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;"><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle><path d="M9 18V6l9-2v10"></path></svg>
+        Toca el disco para escuchar nuestra canción
+      </div>
     </div>
   </section>
 
@@ -149,7 +148,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
     <div style="margin:auto;text-align:center;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:6px;">
       <div style="background:rgba(18,24,20,.46);backdrop-filter:blur(7px);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:14px 32px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px;box-shadow:0 12px 34px rgba(0,0,0,.4);">
         <div style="letter-spacing:.42em;font-size:14px;color:#f3ede0;text-transform:uppercase;">Capítulo cuatro · Detalles importantes</div>
-        <h2 style="font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(42px,5.5vw,66px);color:#fdf8ec;margin:2px 0 2px;">Buenos Consejos</h2>
+        <h2 style="font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(42px,5.5vw,66px);color:#fdf8ec;margin:2px 0 2px;">Para tener en cuenta</h2>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:960px;">
         <div style="background:rgba(252,250,244,.95);border:1px solid rgba(201,168,106,.5);border-radius:16px;padding:24px 24px;width:262px;color:#2e3630;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 16px 34px rgba(0,0,0,.28);">
@@ -159,15 +158,18 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
           <div style="font-family:'Great Vibes',cursive;font-size:34px;color:#8a6a34;line-height:1;">Dresscode</div>
           <div style="font-size:19px;font-weight:600;color:#33402f;">Formal Garden</div>
           <p style="font-size:17px;line-height:1.5;color:#4c5946;margin:2px 0 0;text-wrap:pretty;">Caballeros con traje y damas con vestido largo. El color blanco está reservado para la novia.</p>
-          <p style="font-size:16px;font-style:italic;line-height:1.5;color:#6b7a60;margin:6px 0 0;text-wrap:pretty;">Les recomendamos llevar abrigo: la temperatura puede descender a los 15 °C.</p>
+          <div style="display:flex;align-items:flex-start;gap:9px;align-self:stretch;box-sizing:border-box;background:#f4ecd8;border:1px solid rgba(201,168,106,.6);border-radius:12px;padding:9px 12px;margin-top:8px;text-align:left;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8a6a34" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:1px;"><path d="M9 3l3 3 3-3"></path><path d="M9 3 4 5.5 6 12l2-1v9h8v-9l2 1 2-6.5L15 3"></path><path d="M12 6v15"></path></svg>
+            <span style="font-size:15px;line-height:1.45;color:#6b5326;">Les recomendamos llevar <strong>abrigo</strong>: la temperatura puede descender a los 15 °C.</span>
+          </div>
         </div>
         <div style="background:rgba(252,250,244,.95);border:1px solid rgba(201,168,106,.5);border-radius:16px;padding:24px 24px;width:262px;color:#2e3630;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 16px 34px rgba(0,0,0,.28);">
           <div style="width:56px;height:56px;border-radius:50%;background:#eef1e6;display:flex;align-items:center;justify-content:center;">
-            <svg width="32" height="32" viewBox="0 0 40 40" fill="none" stroke="#8a6a34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6l5 12a5 5 0 0 1-10 0z"></path><path d="M28 6l-5 12a5 5 0 0 0 10 0z"></path><path d="M12 34l5-16M28 34l-5-16"></path><path d="M9 34h11M20 34h11"></path></svg>
+            <svg width="32" height="32" viewBox="0 0 40 40" fill="none" stroke="#8a6a34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h8v3a4 4 0 0 1-8 0z"></path><path d="M13 13v18"></path><path d="M9 32h8"></path><path d="M23 6h8v3a4 4 0 0 1-8 0z"></path><path d="M27 13v18"></path><path d="M23 32h8"></path></svg>
           </div>
           <div style="font-family:'Great Vibes',cursive;font-size:34px;color:#8a6a34;line-height:1;">Celebración</div>
           <div style="font-size:19px;font-weight:600;color:#33402f;">Solo adultos</div>
-          <p style="font-size:17px;line-height:1.5;color:#4c5946;margin:2px 0 0;text-wrap:pretty;">Amamos a los pequeños, pero esta será una velada solo para adultos. Agradecemos su comprensión.</p>
+          <p style="font-size:17px;line-height:1.5;color:#4c5946;margin:2px 0 0;text-wrap:pretty;">Amamos a los pequeños, pero pensamos que les encantaría una noche libre. Será una velada solo para adultos. Agradecemos su comprensión.</p>
         </div>
         <div style="background:rgba(252,250,244,.95);border:1px solid rgba(201,168,106,.5);border-radius:16px;padding:24px 24px;width:262px;color:#2e3630;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 16px 34px rgba(0,0,0,.28);">
           <div style="width:56px;height:56px;border-radius:50%;background:#eef1e6;display:flex;align-items:center;justify-content:center;">
@@ -175,7 +177,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
           </div>
           <div style="font-family:'Great Vibes',cursive;font-size:34px;color:#8a6a34;line-height:1;">Muestras de afecto</div>
           <div style="font-size:19px;font-weight:600;color:#33402f;">Lluvia de sobres</div>
-          <p style="font-size:17px;line-height:1.5;color:#4c5946;margin:2px 0 0;text-wrap:pretty;">Su presencia es nuestro mejor regalo. Si desean tener un detalle con nosotros, será únicamente en sobre.</p>
+          <p style="font-size:17px;line-height:1.5;color:#4c5946;margin:2px 0 0;text-wrap:pretty;">Su presencia es nuestro mejor regalo, pero si aún así desean tener un detalle con nosotros, preferimos que sea en sobre.</p>
         </div>
       </div>
       <div style="display:flex;gap:14px;align-items:center;margin-top:18px;">
@@ -244,7 +246,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
                   </select>
                 </label>
                 <label style="display:flex;flex-direction:column;gap:6px;font-size:16px;color:#4c5946;">¿Alguna alergia alimenticia?
-                  <input name="alergias" type="text" placeholder="Describan cuál (opcional)" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
+                  <input name="alergias" type="text" placeholder="Nombre del invitado y su alergia (opcional)" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:16px;color:#4c5946;">¿Algún invitado vegetariano o vegano?
+                  <input name="dieta" type="text" placeholder="Nombre del invitado y su preferencia (opcional)" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
                 </label>
                 <label style="display:flex;flex-direction:column;gap:6px;font-size:16px;color:#4c5946;">La canción que no puede faltar
                   <input name="cancion" type="text" placeholder="ARTISTA - NOMBRE DE CANCIÓN" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
@@ -293,10 +298,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
     <div style="width:14px;height:14px;border-radius:50%;background:#c9a86a;box-shadow:0 0 0 3px #fbf7ee;"></div>
   </div>
 </button>
-<div data-mhint style="position:fixed;bottom:90px;right:20px;z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:2px;opacity:0;transition:opacity .8s ease;pointer-events:none;">
-  <div style="background:rgba(18,24,20,.62);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:8px 14px;color:#fdf8ec;font-size:16px;font-style:italic;box-shadow:0 8px 22px rgba(0,0,0,.45);">Toca para escuchar nuestra canción ♪</div>
-  <div style="font-size:28px;color:#f2d69a;margin-right:14px;line-height:1;animation:hintbob 1.6s ease-in-out infinite;text-shadow:0 2px 8px rgba(0,0,0,.55);">↘</div>
-</div>
 <sc-if value="{{ musicErr }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;bottom:80px;right:18px;z-index:50;background:rgba(252,250,244,.97);border:1px solid rgba(185,143,78,.6);border-radius:12px;padding:10px 14px;font-family:'Cormorant Garamond',serif;font-size:15px;color:#5a4529;max-width:230px;">Agreguen su canción como <strong>assets/cancion.mp3</strong> para activar la música.</div>
 </sc-if>
@@ -381,7 +382,7 @@ class Component extends DCLogic {
     const { guest, asiste, personas } = this.state;
     if (asiste === null){ this.setState({ formErr:'Por favor indiquen si podrán asistir.' }); return; }
     const rec = { codigo:guest.codigo, nombre:guest.nombre, asiste, personas: asiste?personas:0,
-      alergias: (e.target.elements.alergias ? e.target.elements.alergias.value : ''), cancion: (e.target.elements.cancion ? e.target.elements.cancion.value : ''), fecha:new Date().toISOString() };
+      alergias: (e.target.elements.alergias ? e.target.elements.alergias.value : ''), dieta: (e.target.elements.dieta ? e.target.elements.dieta.value : ''), cancion: (e.target.elements.cancion ? e.target.elements.cancion.value : ''), fecha:new Date().toISOString() };
     try { const key='rsvp-adriana-rogelio'; const arr=JSON.parse(localStorage.getItem(key)||'[]'); arr.push(rec); localStorage.setItem(key, JSON.stringify(arr)); } catch(err){}
     this.setState({ enviado:true, formErr:'' });
   };
