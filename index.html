@@ -22,6 +22,12 @@ a{color:#3e5238;}a:hover{color:#a8834a;}
 @keyframes spin{to{transform:rotate(360deg);}}
 @keyframes pulsering{0%{box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 0 rgba(201,168,106,.6);}70%{box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 18px rgba(201,168,106,0);}100%{box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 0 rgba(201,168,106,0);}}
 @keyframes hintbob{0%,100%{transform:translateY(0);}50%{transform:translateY(5px);}}
+/* Visible keyboard focus: cream ring reads over dark photos, dark ring reads over the cream cards */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #fdf8ec;outline-offset:2px;box-shadow:0 0 0 4px #2e3630!important;}
+/* Respect users who prefer less motion: stop the ambient loops (Ken Burns, birds, fireflies, spinning disc) */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+}
 </style>
 </helmet>
 <div style="position:fixed;inset:0;overflow:hidden;background:#0b1018;">
@@ -56,9 +62,9 @@ a{color:#3e5238;}a:hover{color:#a8834a;}
         <div style="color:#e7dfce;font-size:clamp(16px,1.8vw,19px);letter-spacing:.12em;font-style:italic;">Los Naranjos, Sonsonate · El Salvador</div>
       </div>
       <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:6px;margin-top:2px;">
-        <img src="assets/novios.png" alt="Adriana y Rogelio ilustrados" style="height:min(56vh,560px);max-width:88vw;object-fit:contain;filter:drop-shadow(0 20px 40px rgba(0,0,0,.45));">
+        <img src="assets/novios.webp" alt="Adriana y Rogelio ilustrados" style="height:min(56vh,560px);max-width:88vw;object-fit:contain;filter:drop-shadow(0 20px 40px rgba(0,0,0,.45));">
         <div style="text-align:center;margin-bottom:10px;animation:lukabob 5s ease-in-out infinite;">
-          <img src="assets/luka.png" alt="Luka" style="width:clamp(120px,14vw,184px);height:clamp(120px,14vw,184px);object-fit:contain;filter:drop-shadow(0 10px 20px rgba(0,0,0,.45));">
+          <img src="assets/luka.webp" alt="Luka" style="width:clamp(120px,14vw,184px);height:clamp(120px,14vw,184px);object-fit:contain;filter:drop-shadow(0 10px 20px rgba(0,0,0,.45));">
           <div style="font-family:'Great Vibes',cursive;font-size:26px;color:#fdf8ec;margin-top:-10px;text-shadow:0 2px 10px rgba(0,0,0,.6);">y Luka</div>
         </div>
       </div>
@@ -73,7 +79,7 @@ a{color:#3e5238;}a:hover{color:#a8834a;}
         <h2 style="font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(42px,5.5vw,66px);color:#fdf8ec;margin:2px 0 4px;">Ceremonia Religiosa</h2>
         <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:1px;background:rgba(255,255,255,.55);"></div><div style="width:8px;height:8px;background:#f2d69a;transform:rotate(45deg);"></div><div style="width:40px;height:1px;background:rgba(255,255,255,.55);"></div></div>
       </div>
-      <img src="assets/parroquia.png" alt="Parroquia Nuestra Señora de la Asunción" style="height:min(46vh,470px);max-width:90vw;object-fit:contain;filter:drop-shadow(0 20px 34px rgba(0,0,0,.4));">
+      <img src="assets/parroquia.webp" alt="Parroquia Nuestra Señora de la Asunción" style="height:min(46vh,470px);max-width:90vw;object-fit:contain;filter:drop-shadow(0 20px 34px rgba(0,0,0,.4));">
       <div style="margin-top:-26px;background:rgba(252,250,244,.95);border:1px solid rgba(185,143,78,.45);border-radius:18px;padding:24px 30px;max-width:540px;box-shadow:0 24px 50px rgba(0,0,0,.35);color:#2e3630;">
         <div style="font-size:clamp(22px,2.6vw,27px);font-weight:600;color:#33402f;">Parroquia Nuestra Señora de la Asunción</div>
         <div style="font-size:19px;color:#5c6a52;margin-top:5px;">Los Naranjos, Sonsonate</div>
@@ -122,7 +128,7 @@ a{color:#3e5238;}a:hover{color:#a8834a;}
         <p style="font-size:clamp(18px,2.1vw,21px);line-height:1.5;color:#f0e8d6;margin:0;text-wrap:pretty;">Cachito Mountain se encuentra a 1 hora 30 minutos de San Salvador, por lo que les recomendamos hospedarse cerca.</p>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:820px;">
-        <sc-for list="{{ lodging }}" as="l" hint-placeholder-count="6">
+        <sc-for list="{{ lodging }}" as="l" hint-placeholder-count="4">
           <div style="background:rgba(252,250,244,.95);border:1px solid rgba(201,168,106,.5);border-radius:16px;padding:20px 18px;width:230px;color:#2e3630;display:flex;flex-direction:column;gap:11px;align-items:center;box-shadow:0 16px 34px rgba(0,0,0,.28);">
             <div style="width:46px;height:46px;border-radius:50%;background:#eef1e6;display:flex;align-items:center;justify-content:center;">
               <svg width="26" height="26" viewBox="0 0 32 32" fill="none" stroke="#3e5238" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22v-8a3 3 0 0 1 3-3h12a6 6 0 0 1 6 6v5"></path><path d="M4 16h24"></path><path d="M4 22v3M28 22v3"></path><path d="M9 11V8h7v3"></path></svg>
@@ -263,7 +269,7 @@ a{color:#3e5238;}a:hover{color:#a8834a;}
         <button onClick="{{ goStart }}" style="padding:12px 24px;border-radius:999px;background:rgba(20,26,20,.42);border:1.5px solid rgba(201,168,106,.75);color:#f0e2b6;cursor:pointer;font-family:inherit;font-size:16px;letter-spacing:.08em;backdrop-filter:blur(4px);">Ver de nuevo ⟳</button>
       </div>
       <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin-top:8px;">
-        <img src="assets/luka.png" alt="Luka" style="width:clamp(128px,15vw,188px);height:clamp(128px,15vw,188px);object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));animation:lukabob 5s ease-in-out infinite;">
+        <img src="assets/luka.webp" alt="Luka" style="width:clamp(128px,15vw,188px);height:clamp(128px,15vw,188px);object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));animation:lukabob 5s ease-in-out infinite;">
         <div style="background:rgba(18,24,20,.5);backdrop-filter:blur(7px);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:14px 30px;display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 12px 30px rgba(0,0,0,.45);">
           <div style="font-family:'Great Vibes',cursive;font-size:clamp(34px,4.6vw,48px);color:#fdf8ec;">Adriana &amp; Rogelio</div>
           <div style="font-size:clamp(20px,2.4vw,25px);color:#f2ead8;font-style:italic;">…y Luka los esperan</div>
@@ -300,15 +306,13 @@ class Component extends DCLogic {
   state = { cd:{d:'—',h:'—',m:'—',s:'—'}, guest:null, codeErr:'', asiste:null, personas:1, enviado:false, formErr:'', music:false, musicErr:false };
   chapter = 0;
   total = 6;
-  bgs = ['assets/bg-entrada.png','assets/bg-vista.png','assets/bg-mesas.png','assets/bg-zona.png','assets/bg-vista.png','assets/bg-love.png'];
+  bgs = ['assets/bg-entrada.webp','assets/bg-vista.webp','assets/bg-mesas.webp','assets/bg-zona.webp','assets/bg-vista.webp','assets/bg-love.webp'];
   dayFlag = [true, true, false, true, true, false];
   lodging = [
     { nombre:'Paso del Alaska Resort', url:'https://maps.app.goo.gl/AZHywKptj2T8a9jV7' },
     { nombre:'Los Naranjos Town Houses', url:'https://maps.app.goo.gl/VtfJ17cHySyMXaR39' },
     { nombre:'Cabaña Katok', url:'https://maps.app.goo.gl/AxAP4WAz9KtUCapD7' },
-    { nombre:'Cabañas El Faro', url:'https://maps.app.goo.gl/JEmJ2M1aGVXAhHc48' },
-    { nombre:'Hospedaje sugerido 5', url:'https://maps.google.com/?q=hospedaje+Los+Naranjos+Sonsonate' },
-    { nombre:'Hospedaje sugerido 6', url:'https://maps.google.com/?q=hospedaje+Los+Naranjos+Sonsonate' }
+    { nombre:'Cabañas El Faro', url:'https://maps.app.goo.gl/JEmJ2M1aGVXAhHc48' }
   ];
   guests = {
     'PRUEBA':   { nombre:'Invitado de Prueba', max:5 },
