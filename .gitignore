@@ -1,6 +1,8 @@
 # --- Cloudflare / Wrangler (estado local, no se despliega ni se sube) ---
 .wrangler/
 node_modules/
+logs/
+*.log
 
 # --- Config local de Claude Code (personal) ---
 .claude/settings.local.json
