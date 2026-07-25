@@ -11,4 +11,4 @@ compatibility_date = "2026-07-25"
 [[d1_databases]]
 binding = "DB"
 database_name = "rsvp"
-database_id = "PON-AQUI-EL-ID-DE-TU-BASE-D1"
+database_id = "1f333389-2ee4-4a7e-9ebf-c6322001bc14"
