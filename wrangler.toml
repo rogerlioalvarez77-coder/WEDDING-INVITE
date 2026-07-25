@@ -6,9 +6,9 @@ name = "adriana-rogelio-invitacion"
 pages_build_output_dir = "."
 compatibility_date = "2026-07-25"
 
-# Enlaza la base D1 a la variable env.DB que usan las Functions.
+# Enlaza la base D1 a la variable env.rsvp que usan las Functions.
 # El database_id lo obtienes al crear la base (ver backend/README.md).
 [[d1_databases]]
-binding = "DB"
+binding = "rsvp"
 database_name = "rsvp"
 database_id = "1f333389-2ee4-4a7e-9ebf-c6322001bc14"

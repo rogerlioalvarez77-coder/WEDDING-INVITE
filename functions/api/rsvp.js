@@ -14,7 +14,7 @@ export async function onRequestPost(context) {
   if (!codigo) return json({ ok: false, error: "missing_code" }, 400);
 
   // El codigo debe existir; de paso obtenemos el tope de asientos real.
-  const g = await env.DB
+  const g = await env.rsvp
     .prepare("SELECT asientos FROM guests WHERE codigo = ?")
     .bind(codigo)
     .first();
@@ -26,7 +26,7 @@ export async function onRequestPost(context) {
   // Si asiste: entre 1 y el tope. Si no asiste: 0.
   personas = asiste ? Math.min(Math.max(personas, 1), g.asientos) : 0;
 
-  await env.DB
+  await env.rsvp
     .prepare(
       `INSERT INTO rsvp (codigo, asiste, personas, alergias, dieta, cancion, actualizado_en)
        VALUES (?, ?, ?, ?, ?, ?, datetime('now'))

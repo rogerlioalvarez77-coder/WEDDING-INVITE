@@ -11,7 +11,7 @@ export async function onRequestPost(context) {
   const codigo = String(body?.codigo || "").trim().toUpperCase();
   if (!codigo) return json({ ok: false, error: "missing_code" }, 400);
 
-  const row = await env.DB
+  const row = await env.rsvp
     .prepare("SELECT nombre, asientos FROM guests WHERE codigo = ?")
     .bind(codigo)
     .first();
