@@ -218,11 +218,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
             <div style="font-size:20px;font-weight:600;color:#33402f;text-align:center;">Ingresen su código de invitación</div>
             <p style="font-size:16px;color:#6b7a60;text-align:center;margin:7px 0 16px;line-height:1.45;">Lo encontrarán en su invitación personal.</p>
             <form onSubmit="{{ checkCode }}" style="display:flex;flex-direction:column;gap:12px;">
-              <input name="codigo" type="text" placeholder="Ej. PRUEBA" style="width:100%;padding:13px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:18px;letter-spacing:.14em;text-transform:uppercase;text-align:center;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
+              <input name="codigo" type="text" placeholder="Ej. ABCDE" style="width:100%;padding:13px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:18px;letter-spacing:.14em;text-transform:uppercase;text-align:center;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
               <sc-if value="{{ codeErr }}" hint-placeholder-val="{{ false }}">
                 <div style="color:#a3452f;font-size:16px;text-align:center;">{{ codeErr }}</div>
               </sc-if>
-              <button type="submit" style="padding:13px 24px;border-radius:999px;background:#3e5238;color:#f7f4ea;border:none;cursor:pointer;font-family:inherit;font-size:17px;letter-spacing:.1em;">Ingresar</button>
+              <button type="submit" style="padding:13px 24px;border-radius:999px;background:#3e5238;color:#f7f4ea;border:none;cursor:pointer;font-family:inherit;font-size:17px;letter-spacing:.1em;">{{ codeBtnLabel }}</button>
             </form>
           </div>
         </sc-if>
@@ -259,7 +259,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
             <sc-if value="{{ formErr }}" hint-placeholder-val="{{ false }}">
               <div style="color:#a3452f;font-size:16px;text-align:center;">{{ formErr }}</div>
             </sc-if>
-            <button type="submit" style="padding:13px 24px;border-radius:999px;background:#3e5238;color:#f7f4ea;border:none;cursor:pointer;font-family:inherit;font-size:17px;letter-spacing:.1em;">Enviar confirmación</button>
+            <button type="submit" style="padding:13px 24px;border-radius:999px;background:#3e5238;color:#f7f4ea;border:none;cursor:pointer;font-family:inherit;font-size:17px;letter-spacing:.1em;">{{ submitBtnLabel }}</button>
           </form>
         </sc-if>
         <sc-if value="{{ showDone }}" hint-placeholder-val="{{ false }}">
@@ -304,7 +304,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;luciernagas&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Animación&quot;},&quot;aves&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Animación&quot;},&quot;movimiento&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Animación&quot;}}">
 class Component extends DCLogic {
-  state = { cd:{d:'—',h:'—',m:'—',s:'—'}, guest:null, codeErr:'', asiste:null, personas:1, enviado:false, formErr:'', music:false, musicErr:false };
+  state = { cd:{d:'—',h:'—',m:'—',s:'—'}, guest:null, codeErr:'', asiste:null, personas:1, enviado:false, formErr:'', checking:false, sending:false, music:false, musicErr:false };
   chapter = 0;
   total = 6;
   bgs = ['assets/bg-entrada.webp','assets/bg-vista.webp','assets/bg-mesas.webp','assets/bg-zona.webp','assets/bg-vista.webp','assets/bg-love.webp'];
@@ -315,11 +315,7 @@ class Component extends DCLogic {
     { nombre:'Cabaña Katok', url:'https://maps.app.goo.gl/AxAP4WAz9KtUCapD7' },
     { nombre:'Cabañas Los Cipreses', url:'https://maps.app.goo.gl/JEmJ2M1aGVXAhHc48' }
   ];
-  guests = {
-    'PRUEBA':   { nombre:'Invitado de Prueba', max:5 },
-    'FAMILIA01':{ nombre:'Familia Martínez', max:4 },
-    'AMIGOS02': { nombre:'Sr. y Sra. López', max:2 }
-  };
+  // La lista de invitados vive en Cloudflare D1; se valida en el servidor vía /api/verify.
   rand(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
   makeDots(n, seed){ const r=this.rand(seed); return Array.from({length:n},()=>({ x:+(r()*100).toFixed(1), y:+(r()*100).toFixed(1), w:r()>0.7?3:2, dur:+(2+r()*3).toFixed(1), del:+(r()*4).toFixed(1) })); }
   componentDidMount(){
@@ -370,28 +366,49 @@ class Component extends DCLogic {
     if (this.state.music){ this.audio.pause(); this.setState({ music:false }, () => { this.setSpin(false); this.updateHint(); }); }
     else this.audio.play().then(() => this.setState({ music:true, musicErr:false }, () => { this.setSpin(true); this.updateHint(); })).catch(() => this.setState({ musicErr:true }));
   };
-  checkCode = (e) => {
+  checkCode = async (e) => {
     e.preventDefault();
     const v = ((e.target.elements.codigo && e.target.elements.codigo.value) || '').trim().toUpperCase();
-    const g = this.guests[v];
-    if (g) this.setState({ guest:{ ...g, codigo:v }, codeErr:'', personas:1, asiste:null });
-    else this.setState({ codeErr:'Código no encontrado. Verifiquen su invitación.' });
+    if (!v){ this.setState({ codeErr:'Ingresen su código.' }); return; }
+    this.setState({ checking:true, codeErr:'' });
+    try {
+      const res = await fetch('/api/verify', { method:'POST', headers:{ 'content-type':'application/json' }, body: JSON.stringify({ codigo:v }) });
+      if (res.ok){
+        const g = await res.json();
+        this.setState({ guest:{ nombre:g.nombre, max:g.max, codigo:v }, codeErr:'', personas:1, asiste:null, checking:false });
+      } else if (res.status === 404){
+        this.setState({ codeErr:'Código no encontrado. Verifiquen su invitación.', checking:false });
+      } else {
+        this.setState({ codeErr:'No se pudo verificar. Inténtenlo de nuevo.', checking:false });
+      }
+    } catch (err) {
+      this.setState({ codeErr:'Sin conexión. Revisen su internet e inténtenlo de nuevo.', checking:false });
+    }
   };
-  submitRsvp = (e) => {
+  submitRsvp = async (e) => {
     e.preventDefault();
     const { guest, asiste, personas } = this.state;
     if (asiste === null){ this.setState({ formErr:'Por favor indiquen si podrán asistir.' }); return; }
-    const rec = { codigo:guest.codigo, nombre:guest.nombre, asiste, personas: asiste?personas:0,
-      alergias: (e.target.elements.alergias ? e.target.elements.alergias.value : ''), dieta: (e.target.elements.dieta ? e.target.elements.dieta.value : ''), cancion: (e.target.elements.cancion ? e.target.elements.cancion.value : ''), fecha:new Date().toISOString() };
-    try { const key='rsvp-adriana-rogelio'; const arr=JSON.parse(localStorage.getItem(key)||'[]'); arr.push(rec); localStorage.setItem(key, JSON.stringify(arr)); } catch(err){}
-    this.setState({ enviado:true, formErr:'' });
+    const el = e.target.elements;
+    const payload = { codigo:guest.codigo, asiste, personas: asiste?personas:0,
+      alergias: (el.alergias ? el.alergias.value : ''), dieta: (el.dieta ? el.dieta.value : ''), cancion: (el.cancion ? el.cancion.value : '') };
+    this.setState({ sending:true, formErr:'' });
+    try {
+      const res = await fetch('/api/rsvp', { method:'POST', headers:{ 'content-type':'application/json' }, body: JSON.stringify(payload) });
+      if (res.ok) this.setState({ enviado:true, formErr:'', sending:false });
+      else this.setState({ formErr:'No se pudo enviar. Inténtenlo de nuevo.', sending:false });
+    } catch (err) {
+      this.setState({ formErr:'Sin conexión. Revisen su internet e inténtenlo de nuevo.', sending:false });
+    }
   };
   renderVals(){
-    const { cd, guest, codeErr, asiste, personas, enviado, formErr, music, musicErr } = this.state;
+    const { cd, guest, codeErr, asiste, personas, enviado, formErr, checking, sending, music, musicErr } = this.state;
     this._flies = this._flies || this.makeDots(10, 21);
     const btn = sel => 'padding:11px 20px;border-radius:999px;border:1.5px solid #3e5238;cursor:pointer;font-family:inherit;font-size:16px;letter-spacing:.04em;' + (sel ? 'background:#3e5238;color:#f7f4ea;' : 'background:transparent;color:#3e5238;');
     return {
       cd, codeErr, formErr, personas, musicErr,
+      codeBtnLabel: checking ? 'Verificando…' : 'Ingresar',
+      submitBtnLabel: sending ? 'Enviando…' : 'Enviar confirmación',
       bgs: this.bgs, flies: this._flies, lodging: this.lodging,
       lucOn: this.props.luciernagas ?? true,
       showCode: !guest && !enviado,
