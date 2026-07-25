@@ -1,0 +1,14 @@
+# Config de Cloudflare para el sitio (Pages) + base de datos D1.
+# wrangler NO sube este archivo ni la carpeta functions/ como assets estaticos:
+# functions/ se compila a Workers y este .toml queda fuera del sitio publico.
+
+name = "adriana-rogelio-invitacion"
+pages_build_output_dir = "."
+compatibility_date = "2026-07-25"
+
+# Enlaza la base D1 a la variable env.DB que usan las Functions.
+# El database_id lo obtienes al crear la base (ver backend/README.md).
+[[d1_databases]]
+binding = "DB"
+database_name = "rsvp"
+database_id = "PON-AQUI-EL-ID-DE-TU-BASE-D1"

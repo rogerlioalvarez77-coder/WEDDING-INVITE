@@ -1,0 +1,19 @@
+# --- Cloudflare / Wrangler (estado local, no se despliega ni se sube) ---
+.wrangler/
+node_modules/
+
+# --- Config local de Claude Code (personal) ---
+.claude/settings.local.json
+
+# --- Datos privados de invitados ---
+# Viven en ../backend (fuera de este repo). Estas reglas son un seguro
+# extra por si por error se copia alguno DENTRO de dist/.
+asientos_reservados.csv
+codigos.csv
+guests.json
+seed.sql
+respuestas.json
+
+# --- Sistema ---
+.DS_Store
+Thumbs.db
