@@ -1,9 +1,9 @@
 # Config de Cloudflare para el sitio (Pages) + base de datos D1.
-# wrangler NO sube este archivo ni la carpeta functions/ como assets estaticos:
-# functions/ se compila a Workers y este .toml queda fuera del sitio publico.
+# El sitio publico se sirve desde public/ (build output dir, se fija en el dashboard).
+# Este archivo, functions/, README.md y CLAUDE.md quedan en la raiz del repo -> NO se sirven.
 
 name = "adriana-rogelio-invitacion"
-pages_build_output_dir = "."
+pages_build_output_dir = "public"
 compatibility_date = "2026-07-25"
 
 # Enlaza la base D1 a la variable env.rsvp que usan las Functions.
