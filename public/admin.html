@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Confirmaciones · Adriana & Rogelio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4efe4; --card:#fffdf7; --ink:#2c332b; --muted:#6d7462; --gold:#8a6a34;
+    --green:#3e5238; --line:#e6e0d1;
+    --ok:#4c7a3f; --no:#c0674f; --wait:#7c8aa0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;margin:0}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 16px 60px}
+  .serif{font-family:"Cormorant Garamond",Georgia,serif}
+
+  /* ---- login ---- */
+  #login{min-height:82vh;display:flex;align-items:center;justify-content:center}
+  .lcard{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:34px 30px;width:min(92vw,380px);box-shadow:0 20px 50px rgba(0,0,0,.12);text-align:center}
+  .lcard h1{font-size:34px;color:var(--green)}
+  .lcard p{color:var(--muted);margin:6px 0 20px}
+  input[type=password],input[type=search]{width:100%;padding:12px 14px;border:1px solid #c6ceba;
+    border-radius:10px;font:inherit;font-size:16px;background:#fffef9;color:var(--ink)}
+  .btn{padding:11px 20px;border-radius:999px;border:none;cursor:pointer;font:inherit;font-size:15px;
+    background:var(--green);color:#f7f4ea;letter-spacing:.02em}
+  .btn:hover{background:#33452e}
+  .btn.ghost{background:transparent;color:var(--green);border:1.5px solid #c1cbb4}
+  .btn.ghost:hover{background:#eef1e7}
+  .err{color:#a3452f;font-size:14px;margin-top:12px;min-height:18px}
+
+  /* ---- header ---- */
+  .top{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between;margin-bottom:18px}
+  .top h1{font-size:clamp(28px,5vw,40px);color:var(--green);line-height:1.05}
+  .top .sub{color:var(--muted);font-size:14px;margin-top:2px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* ---- tiles ---- */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;
+    box-shadow:0 6px 18px rgba(0,0,0,.05)}
+  .tile .lab{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.06em}
+  .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .tile .num{font-size:34px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .tile .foot{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+  /* ---- meter ---- */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+    box-shadow:0 6px 18px rgba(0,0,0,.05);margin-bottom:16px}
+  .panel h2{font-size:22px;color:var(--green);margin-bottom:10px}
+  .meter{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#ece6d8;gap:2px}
+  .meter span{display:block;height:100%}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:10px;font-size:13.5px;color:var(--ink)}
+  .legend .it{display:flex;align-items:center;gap:7px}
+  .legend b{font-variant-numeric:tabular-nums}
+
+  /* ---- table ---- */
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:4px 0 10px}
+  .toolbar .search{max-width:280px;flex:1 1 200px}
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+  table{border-collapse:collapse;width:100%;font-size:14px;min-width:720px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f0ead9;color:var(--green);font-weight:600;font-size:12.5px;text-transform:uppercase;
+    letter-spacing:.04em;position:sticky;top:0}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#faf7ee}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;
+    font-size:12.5px;font-weight:600;white-space:nowrap}
+  .pill.yes{background:#e6f0e0;color:#356030}
+  .pill.no{background:#f6e4de;color:#9c4531}
+  .muted{color:var(--muted)}
+  .nombre{font-weight:600}
+  .empty{padding:26px;text-align:center;color:var(--muted)}
+
+  /* ---- lists ---- */
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  ul.list{list-style:none;margin:8px 0 0;padding:0}
+  ul.list li{padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px;display:flex;
+    justify-content:space-between;gap:12px}
+  ul.list li:last-child{border-bottom:none}
+  .song{color:var(--ink)} .song .who{color:var(--muted);font-size:12.5px}
+  .hidden{display:none}
+  a.link{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <div id="login">
+    <form class="lcard" id="loginForm">
+      <h1>Confirmaciones</h1>
+      <p class="serif" style="font-size:18px">Adriana &amp; Rogelio</p>
+      <input type="password" id="pass" placeholder="Contraseña de administración" autocomplete="current-password" required>
+      <div style="margin-top:14px"><button class="btn" type="submit" style="width:100%">Entrar</button></div>
+      <div class="err" id="loginErr"></div>
+    </form>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dash" class="hidden">
+    <div class="top">
+      <div>
+        <h1>Confirmaciones</h1>
+        <div class="sub serif" style="font-size:17px">Adriana &amp; Rogelio · 28 · 11 · 2026</div>
+        <div class="sub" id="updated"></div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="btnCsv" type="button">Exportar CSV</button>
+        <button class="btn ghost" id="btnRefresh" type="button">↻ Actualizar</button>
+        <button class="btn ghost" id="btnLogout" type="button">Salir</button>
+      </div>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="panel">
+      <h2>Avance de respuestas</h2>
+      <div class="meter" id="meter"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="toolbar">
+      <h2 class="serif" style="color:var(--green)">Respuestas</h2>
+      <input type="search" class="search" id="search" placeholder="Buscar familia, canción, alergia…">
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>Familia</th><th>Asiste</th><th>Personas</th><th>Alergias</th>
+          <th>Dieta</th><th>Canción</th><th>Actualizado</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <div class="cols" style="margin-top:16px">
+      <div class="panel" style="margin:0">
+        <h2>Sin responder (<span id="pendCount">0</span>)</h2>
+        <ul class="list" id="pending"></ul>
+      </div>
+      <div class="panel" style="margin:0">
+        <h2>Playlist pedida (<span id="songCount">0</span>)</h2>
+        <ul class="list" id="songs"></ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = "/api/admin";
+const KEY = "wi-admin-token";
+let DATA = null;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dash = v => (v == null || String(v).trim() === "") ? '<span class="muted">—</span>' : esc(v);
+
+function fmtDate(s){
+  if(!s) return "—";
+  const d = new Date(String(s).replace(" ", "T") + "Z"); // D1 guarda UTC
+  if(isNaN(d)) return esc(s);
+  return d.toLocaleString("es-SV",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+}
+
+async function load(){
+  const token = localStorage.getItem(KEY);
+  if(!token){ showLogin(); return; }
+  try{
+    const res = await fetch(API, {method:"POST",headers:{"content-type":"application/json"},
+      body: JSON.stringify({token})});
+    if(res.status === 401){ localStorage.removeItem(KEY); showLogin("Contraseña incorrecta."); return; }
+    if(res.status === 500){ showLogin("Falta configurar ADMIN_TOKEN en el servidor."); return; }
+    if(!res.ok){ showLogin("No se pudo cargar. Inténtalo de nuevo."); return; }
+    DATA = await res.json();
+    render(DATA);
+    showDash();
+  }catch(e){ showLogin("Sin conexión. Revisa tu internet."); }
+}
+
+function showLogin(msg){ $("#dash").classList.add("hidden"); $("#login").classList.remove("hidden");
+  $("#loginErr").textContent = msg || ""; }
+function showDash(){ $("#login").classList.add("hidden"); $("#dash").classList.remove("hidden"); }
+
+function tile(color,label,num,foot){
+  return `<div class="tile"><div class="lab">${color?`<span class="dot" style="background:${color}"></span>`:""}${esc(label)}</div>`+
+    `<div class="num">${num}</div>${foot?`<div class="foot">${foot}</div>`:""}</div>`;
+}
+
+function render(d){
+  const t = d.totals;
+  const pend = t.familias - t.respondieron;
+  $("#updated").textContent = "Actualizado " + new Date().toLocaleString("es-SV",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+
+  $("#tiles").innerHTML =
+    tile("", "Familias invitadas", t.familias, `${t.asientos_totales} asientos reservados`) +
+    tile("var(--ok)",   "Confirmadas",     t.confirmadas, `${t.personas} personas asistirán`) +
+    tile("var(--no)",   "No asistirán",    t.declinadas, "&nbsp;") +
+    tile("var(--wait)", "Sin responder",   pend, `${Math.round((t.respondieron/(t.familias||1))*100)}% ya respondió`);
+
+  // meter (segmentos etiquetados en la leyenda)
+  const seg = (n,c) => t.familias ? `<span style="width:${(n/t.familias*100).toFixed(2)}%;background:${c}"></span>` : "";
+  $("#meter").innerHTML = seg(t.confirmadas,"var(--ok)") + seg(t.declinadas,"var(--no)") + seg(pend,"var(--wait)");
+  $("#legend").innerHTML =
+    `<span class="it"><span class="dot" style="background:var(--ok)"></span>Confirmadas <b>${t.confirmadas}</b></span>`+
+    `<span class="it"><span class="dot" style="background:var(--no)"></span>No asistirán <b>${t.declinadas}</b></span>`+
+    `<span class="it"><span class="dot" style="background:var(--wait)"></span>Sin responder <b>${pend}</b></span>`;
+
+  renderRows(d.responses);
+
+  $("#pendCount").textContent = d.pending.length;
+  $("#pending").innerHTML = d.pending.length
+    ? d.pending.map(p=>`<li><span>${esc(p.nombre)}</span><span class="muted">${p.asientos} as.</span></li>`).join("")
+    : `<li class="muted">Todos respondieron 🎉</li>`;
+
+  const songs = d.responses.filter(r=>r.cancion && r.cancion.trim());
+  $("#songCount").textContent = songs.length;
+  $("#songs").innerHTML = songs.length
+    ? songs.map(r=>`<li class="song"><span>${esc(r.cancion)}</span> <span class="who">${esc(r.nombre)}</span></li>`).join("")
+    : `<li class="muted">Aún no hay canciones pedidas.</li>`;
+}
+
+function renderRows(list){
+  const rows = $("#rows");
+  if(!list.length){ rows.innerHTML = `<tr><td colspan="7" class="empty">Aún no hay confirmaciones.</td></tr>`; return; }
+  rows.innerHTML = list.map(r=>{
+    const pill = r.asiste
+      ? `<span class="pill yes">✓ Sí</span>`
+      : `<span class="pill no">✕ No</span>`;
+    return `<tr>
+      <td class="nombre">${esc(r.nombre)}</td>
+      <td>${pill}</td>
+      <td>${r.asiste ? `${r.personas} <span class="muted">/ ${r.asientos}</span>` : `<span class="muted">—</span>`}</td>
+      <td>${dash(r.alergias)}</td>
+      <td>${dash(r.dieta)}</td>
+      <td>${dash(r.cancion)}</td>
+      <td class="muted">${fmtDate(r.actualizado_en)}</td>
+    </tr>`;
+  }).join("");
+}
+
+function toCSV(list){
+  const head = ["Familia","Asiste","Personas","Asientos","Alergias","Dieta","Cancion","Actualizado"];
+  const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
+  const lines = [head.join(",")].concat(list.map(r=>[
+    r.nombre, r.asiste?"Si":"No", r.asiste?r.personas:0, r.asientos,
+    r.alergias||"", r.dieta||"", r.cancion||"", r.actualizado_en
+  ].map(q).join(",")));
+  return lines.join("\r\n");
+}
+
+// ---- eventos ----
+$("#loginForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const v = $("#pass").value.trim();
+  if(!v) return;
+  localStorage.setItem(KEY, v);
+  $("#pass").value = "";
+  load();
+});
+$("#btnRefresh").addEventListener("click", load);
+$("#btnLogout").addEventListener("click", ()=>{ localStorage.removeItem(KEY); showLogin(); });
+$("#btnCsv").addEventListener("click", ()=>{
+  if(!DATA) return;
+  const blob = new Blob([toCSV(DATA.responses)], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "confirmaciones.csv";
+  a.click(); URL.revokeObjectURL(a.href);
+});
+$("#search").addEventListener("input", e=>{
+  if(!DATA) return;
+  const q = e.target.value.toLowerCase().trim();
+  const f = !q ? DATA.responses : DATA.responses.filter(r=>
+    [r.nombre,r.cancion,r.alergias,r.dieta].some(x=>(x||"").toLowerCase().includes(q)));
+  renderRows(f);
+});
+
+load();
+</script>
+</body>
+</html>
