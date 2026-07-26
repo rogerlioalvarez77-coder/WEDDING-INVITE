@@ -39,7 +39,7 @@ arrives already personalized. If they already answered, they see that answer plu
 "Modificar respuesta" button instead of a blank form. The sending tool lives in
 `../backend/whatsapp_links.py`.
 
-The D1 binding variable is `rsvp`. Private data (guest list, schema, seed) and the full setup/deploy/export runbook live in `../backend/`.
+The D1 binding variable is `rsvp`. Private data (guest list, schema, seed) and the full setup/deploy/export runbook live in `../backend/` (`README.md` = reference, `COMO-HACER-CAMBIOS.md` = per-scenario playbook for guest-list edits).
 
 `guests` columns: `codigo, nombre, asientos, telefono, responsable`. Source of truth is `../backend/asientos_reservados.csv` → `python3 generate_codes.py` → `seed.sql` (an idempotent UPSERT — re-running never wipes `rsvp` rows).
 
