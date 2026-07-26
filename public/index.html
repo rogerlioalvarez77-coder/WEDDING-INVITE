@@ -218,12 +218,23 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
             <div style="font-size:20px;font-weight:600;color:#33402f;text-align:center;">Ingresen su código de invitación</div>
             <p style="font-size:16px;color:#6b7a60;text-align:center;margin:7px 0 16px;line-height:1.45;">Lo encontrarán en su invitación personal.</p>
             <form onSubmit="{{ checkCode }}" style="display:flex;flex-direction:column;gap:12px;">
-              <input name="codigo" type="text" placeholder="Ej. ABCDE" style="width:100%;padding:13px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:18px;letter-spacing:.14em;text-transform:uppercase;text-align:center;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
+              <input name="codigo" type="text" placeholder="Ej. ABCDE" defaultValue="{{ codigoPrefill }}" style="width:100%;padding:13px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:18px;letter-spacing:.14em;text-transform:uppercase;text-align:center;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
               <sc-if value="{{ codeErr }}" hint-placeholder-val="{{ false }}">
                 <div style="color:#a3452f;font-size:16px;text-align:center;">{{ codeErr }}</div>
               </sc-if>
-              <button type="submit" style="padding:13px 24px;border-radius:999px;background:#3e5238;color:#f7f4ea;border:none;cursor:pointer;font-family:inherit;font-size:17px;letter-spacing:.1em;">{{ codeBtnLabel }}</button>
+              <button type="submit" disabled="{{ checking }}" style="{{ codeBtnStyle }}">{{ codeBtnLabel }}</button>
             </form>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showYa }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;">
+            <div style="font-size:21px;font-weight:600;color:#33402f;">{{ guestNombre }}</div>
+            <div style="font-family:'Great Vibes',cursive;font-size:36px;color:#8a6a34;margin-top:4px;line-height:1.2;">Ya recibimos su respuesta</div>
+            <p style="font-size:18px;color:#4c5946;line-height:1.55;margin:10px 0 0;text-wrap:pretty;">{{ yaResumen }}</p>
+            <sc-if value="{{ yaFecha }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:15px;color:#8a9382;margin-top:6px;">Registrada el {{ yaFecha }}</div>
+            </sc-if>
+            <button type="button" onClick="{{ editar }}" style="margin-top:20px;padding:11px 22px;border-radius:999px;background:transparent;color:#3e5238;border:1.5px solid #3e5238;cursor:pointer;font-family:inherit;font-size:16px;letter-spacing:.04em;">Modificar respuesta</button>
           </div>
         </sc-if>
         <sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
@@ -246,20 +257,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
                   </select>
                 </label>
                 <label style="display:flex;flex-direction:column;gap:6px;font-size:16px;color:#4c5946;">¿Alguna alergia alimenticia?
-                  <input name="alergias" type="text" placeholder="Nombre del invitado y su alergia (opcional)" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
+                  <input name="alergias" type="text" placeholder="Nombre del invitado y su alergia (opcional)" defaultValue="{{ prevAlergias }}" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
                 </label>
                 <label style="display:flex;flex-direction:column;gap:6px;font-size:16px;color:#4c5946;">¿Algún invitado vegetariano o vegano?
-                  <input name="dieta" type="text" placeholder="Nombre del invitado y su preferencia (opcional)" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
+                  <input name="dieta" type="text" placeholder="Nombre del invitado y su preferencia (opcional)" defaultValue="{{ prevDieta }}" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
                 </label>
                 <label style="display:flex;flex-direction:column;gap:6px;font-size:16px;color:#4c5946;">La canción que no puede faltar
-                  <input name="cancion" type="text" placeholder="ARTISTA - NOMBRE DE CANCIÓN" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
+                  <input name="cancion" type="text" placeholder="ARTISTA - NOMBRE DE CANCIÓN" defaultValue="{{ prevCancion }}" style="padding:12px 14px;border:1px solid #b9c2ad;border-radius:10px;font-family:inherit;font-size:17px;background:#fffdf7;color:#2e3630;box-sizing:border-box;">
                 </label>
               </div>
             </sc-if>
             <sc-if value="{{ formErr }}" hint-placeholder-val="{{ false }}">
               <div style="color:#a3452f;font-size:16px;text-align:center;">{{ formErr }}</div>
             </sc-if>
-            <button type="submit" style="padding:13px 24px;border-radius:999px;background:#3e5238;color:#f7f4ea;border:none;cursor:pointer;font-family:inherit;font-size:17px;letter-spacing:.1em;">{{ submitBtnLabel }}</button>
+            <button type="submit" disabled="{{ sending }}" style="{{ submitBtnStyle }}">{{ submitBtnLabel }}</button>
           </form>
         </sc-if>
         <sc-if value="{{ showDone }}" hint-placeholder-val="{{ false }}">
@@ -304,7 +315,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;luciernagas&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Animación&quot;},&quot;aves&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Animación&quot;},&quot;movimiento&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Animación&quot;}}">
 class Component extends DCLogic {
-  state = { cd:{d:'—',h:'—',m:'—',s:'—'}, guest:null, codeErr:'', asiste:null, personas:1, enviado:false, formErr:'', checking:false, sending:false, music:false, musicErr:false };
+  state = { cd:{d:'—',h:'—',m:'—',s:'—'}, guest:null, ya:null, editando:false, codeErr:'', asiste:null, personas:1, enviado:false, formErr:'', checking:false, sending:false, music:false, musicErr:false, codigoPrefill:this.codeFromUrl() };
   chapter = 0;
   total = 6;
   bgs = ['assets/bg-entrada.webp','assets/bg-vista.webp','assets/bg-mesas.webp','assets/bg-zona.webp','assets/bg-vista.webp','assets/bg-love.webp'];
@@ -318,6 +329,24 @@ class Component extends DCLogic {
   // La lista de invitados vive en Cloudflare D1; se valida en el servidor vía /api/verify.
   rand(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
   makeDots(n, seed){ const r=this.rand(seed); return Array.from({length:n},()=>({ x:+(r()*100).toFixed(1), y:+(r()*100).toFixed(1), w:r()>0.7?3:2, dur:+(2+r()*3).toFixed(1), del:+(r()*4).toFixed(1) })); }
+  // Codigo que viaja en el enlace que se manda por WhatsApp (?c=XXXXX). Se lee
+  // aqui, en el inicializador de estado, porque el input es no controlado y
+  // React solo aplica defaultValue al montar: para cuando resolviera un fetch
+  // el input ya estaria montado y vacio.
+  codeFromUrl(){
+    try {
+      const p = new URLSearchParams(location.search);
+      const v = ((p.get('c') || p.get('codigo') || '') + '').trim().toUpperCase();
+      return /^[A-Z0-9]{4,8}$/.test(v) ? v : '';
+    } catch (e) { return ''; }
+  }
+  fechaCorta(s){
+    try {
+      // D1 guarda datetime('now') en UTC y sin marca de zona: hay que decirselo.
+      const d = new Date(String(s).replace(' ', 'T') + 'Z');
+      return isNaN(d.getTime()) ? '' : d.toLocaleDateString('es-SV', { day:'numeric', month:'long', year:'numeric' });
+    } catch (e) { return ''; }
+  }
   componentDidMount(){
     const target = new Date('2026-11-28T15:00:00-06:00').getTime();
     const pad = v => String(v).padStart(2,'0');
@@ -330,6 +359,9 @@ class Component extends DCLogic {
     this.onKey = (e) => { if (e.key === 'ArrowRight') this.go(this.chapter+1); else if (e.key === 'ArrowLeft') this.go(this.chapter-1); };
     window.addEventListener('keydown', this.onKey);
     this.apply();
+    // Vienen del enlace de WhatsApp: se valida solo, sin saltar de capitulo, para
+    // que igual recorran la invitacion y lleguen al formulario ya personalizado.
+    if (this.state.codigoPrefill) this.verifyCode(this.state.codigoPrefill, true);
   }
   componentWillUnmount(){ clearInterval(this.timer); window.removeEventListener('keydown', this.onKey); }
   go(i){ if (i < 0 || i >= this.total) return; this.chapter = i; this.apply(); }
@@ -366,24 +398,38 @@ class Component extends DCLogic {
     if (this.state.music){ this.audio.pause(); this.setState({ music:false }, () => { this.setSpin(false); this.updateHint(); }); }
     else this.audio.play().then(() => this.setState({ music:true, musicErr:false }, () => { this.setSpin(true); this.updateHint(); })).catch(() => this.setState({ musicErr:true }));
   };
-  checkCode = async (e) => {
-    e.preventDefault();
-    const v = ((e.target.elements.codigo && e.target.elements.codigo.value) || '').trim().toUpperCase();
+  // silent = viene del enlace, no de que hayan tecleado: si falla NO se pinta el
+  // error, solo se cae al formulario manual con el codigo ya escrito. Seria
+  // pesimo recibir "Codigo no encontrado" antes siquiera de ver la invitacion.
+  verifyCode = async (v, silent) => {
     if (!v){ this.setState({ codeErr:'Ingresen su código.' }); return; }
     this.setState({ checking:true, codeErr:'' });
+    const falla = (msg) => this.setState({ codeErr: silent ? '' : msg, checking:false });
     try {
       const res = await fetch('/api/verify', { method:'POST', headers:{ 'content-type':'application/json' }, body: JSON.stringify({ codigo:v }) });
       if (res.ok){
         const g = await res.json();
-        this.setState({ guest:{ nombre:g.nombre, max:g.max, codigo:v }, codeErr:'', personas:1, asiste:null, checking:false });
+        const p = g.ya ? g.previo : null;
+        this.setState({
+          guest:{ nombre:g.nombre, max:g.max, codigo:v },
+          ya: p, editando:false, codeErr:'', checking:false,
+          // Si ya habian respondido, el formulario arranca con SU respuesta.
+          asiste: p ? p.asiste === 1 : null,
+          personas: p && p.personas ? Math.min(p.personas, g.max) : 1
+        });
       } else if (res.status === 404){
-        this.setState({ codeErr:'Código no encontrado. Verifiquen su invitación.', checking:false });
+        falla('Código no encontrado. Verifiquen su invitación.');
       } else {
-        this.setState({ codeErr:'No se pudo verificar. Inténtenlo de nuevo.', checking:false });
+        falla('No se pudo verificar. Inténtenlo de nuevo.');
       }
     } catch (err) {
-      this.setState({ codeErr:'Sin conexión. Revisen su internet e inténtenlo de nuevo.', checking:false });
+      falla('Sin conexión. Revisen su internet e inténtenlo de nuevo.');
     }
+  };
+  checkCode = (e) => {
+    e.preventDefault();
+    const v = ((e.target.elements.codigo && e.target.elements.codigo.value) || '').trim().toUpperCase();
+    this.verifyCode(v, false);
   };
   submitRsvp = async (e) => {
     e.preventDefault();
@@ -402,18 +448,32 @@ class Component extends DCLogic {
     }
   };
   renderVals(){
-    const { cd, guest, codeErr, asiste, personas, enviado, formErr, checking, sending, music, musicErr } = this.state;
+    const { cd, guest, ya, editando, codeErr, asiste, personas, enviado, formErr, checking, sending, music, musicErr, codigoPrefill } = this.state;
     this._flies = this._flies || this.makeDots(10, 21);
     const btn = sel => 'padding:11px 20px;border-radius:999px;border:1.5px solid #3e5238;cursor:pointer;font-family:inherit;font-size:16px;letter-spacing:.04em;' + (sel ? 'background:#3e5238;color:#f7f4ea;' : 'background:transparent;color:#3e5238;');
+    const bigBtn = busy => 'padding:13px 24px;border-radius:999px;background:#3e5238;color:#f7f4ea;border:none;font-family:inherit;font-size:17px;letter-spacing:.1em;' + (busy ? 'opacity:.6;cursor:default;' : 'cursor:pointer;');
     return {
-      cd, codeErr, formErr, personas, musicErr,
+      cd, codeErr, formErr, personas, musicErr, codigoPrefill, checking, sending,
       codeBtnLabel: checking ? 'Verificando…' : 'Ingresar',
       submitBtnLabel: sending ? 'Enviando…' : 'Enviar confirmación',
+      codeBtnStyle: bigBtn(checking),
+      submitBtnStyle: bigBtn(sending),
       bgs: this.bgs, flies: this._flies, lodging: this.lodging,
       lucOn: this.props.luciernagas ?? true,
       showCode: !guest && !enviado,
-      showForm: !!guest && !enviado,
+      showYa: !!guest && !!ya && !editando && !enviado,
+      showForm: !!guest && (!ya || editando) && !enviado,
       showDone: enviado,
+      yaResumen: !ya ? ''
+        : ya.asiste === 1
+          ? (ya.personas === 1 ? 'Sí, asistirá 1 persona.' : 'Sí, asistirán ' + ya.personas + ' personas.')
+          : 'Nos avisaron que no podrán acompañarnos.',
+      yaFecha: ya && ya.actualizado_en ? this.fechaCorta(ya.actualizado_en) : '',
+      // Para que "Modificar respuesta" abra el formulario con lo que ya escribieron.
+      prevAlergias: (ya && ya.alergias) || '',
+      prevDieta: (ya && ya.dieta) || '',
+      prevCancion: (ya && ya.cancion) || '',
+      editar: () => this.setState({ editando:true, formErr:'' }),
       guestNombre: guest ? guest.nombre : '',
       guestMax: guest ? guest.max : 0,
       seatOpts: guest ? Array.from({ length: guest.max }, (_, i) => i + 1) : [],
@@ -421,8 +481,10 @@ class Component extends DCLogic {
       siStyle: btn(asiste === true),
       noStyle: btn(asiste === false),
       doneMsg: asiste
-        ? 'Su confirmación ha sido recibida. Nos llena de alegría saber que nos acompañarán en este día tan especial.'
-        : 'Su respuesta ha sido recibida. Lamentamos que no puedan acompañarnos; les llevaremos en el corazón.',
+        ? (ya ? 'Su confirmación ha sido actualizada. Nos llena de alegría saber que nos acompañarán en este día tan especial.'
+              : 'Su confirmación ha sido recibida. Nos llena de alegría saber que nos acompañarán en este día tan especial.')
+        : (ya ? 'Su respuesta ha sido actualizada. Lamentamos que no puedan acompañarnos; les llevaremos en el corazón.'
+              : 'Su respuesta ha sido recibida. Lamentamos que no puedan acompañarnos; les llevaremos en el corazón.'),
       next: () => this.go(this.chapter+1),
       prev: () => this.go(this.chapter-1),
       goStart: () => this.go(0),

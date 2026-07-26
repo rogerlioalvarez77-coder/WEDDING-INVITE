@@ -29,8 +29,14 @@ The git repo root is **also** the Cloudflare Pages project. Only `public/` is se
 ## Backend (RSVP)
 
 The form posts to Pages Functions backed by D1 (SQLite):
-- `functions/api/verify.js` — validates the code against D1 (guest list never ships in the HTML).
+- `functions/api/verify.js` — validates the code against D1 (guest list never ships in the HTML) and returns any prior answer (`ya` / `previo`).
 - `functions/api/rsvp.js` — stores the confirmation (upsert; enforces the seat cap server-side).
+
+Invitations go out by WhatsApp with the code in the URL (`/?c=RD273`). `index.html` reads
+it in the state initializer (`codeFromUrl()`) and auto-verifies on mount, so the form
+arrives already personalized. If they already answered, they see that answer plus a
+"Modificar respuesta" button instead of a blank form. The sending tool lives in
+`../backend/whatsapp_links.py`.
 
 The D1 binding variable is `rsvp`. Private data (guest list, schema, seed) and the full setup/deploy/export runbook live in `../backend/`.
 
