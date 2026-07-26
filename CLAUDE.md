@@ -31,6 +31,7 @@ The git repo root is **also** the Cloudflare Pages project. Only `public/` is se
 The form posts to Pages Functions backed by D1 (SQLite):
 - `functions/api/verify.js` — validates the code against D1 (guest list never ships in the HTML) and returns any prior answer (`ya` / `previo`).
 - `functions/api/rsvp.js` — stores the confirmation (upsert; enforces the seat cap server-side).
+- `functions/api/admin.js` — token-gated (`ADMIN_TOKEN`) dump of `responses` + `pending` for `public/admin.html`. It is the **only** endpoint that returns `guests.telefono` / `guests.responsable`; keep it that way. Totals are computed in the browser so the Adriana/Rogelio filter recalculates without another query.
 
 Invitations go out by WhatsApp with the code in the URL (`/?c=RD273`). `index.html` reads
 it in the state initializer (`codeFromUrl()`) and auto-verifies on mount, so the form
@@ -39,6 +40,8 @@ arrives already personalized. If they already answered, they see that answer plu
 `../backend/whatsapp_links.py`.
 
 The D1 binding variable is `rsvp`. Private data (guest list, schema, seed) and the full setup/deploy/export runbook live in `../backend/`.
+
+`guests` columns: `codigo, nombre, asientos, telefono, responsable`. Source of truth is `../backend/asientos_reservados.csv` → `python3 generate_codes.py` → `seed.sql` (an idempotent UPSERT — re-running never wipes `rsvp` rows).
 
 ## Local preview
 

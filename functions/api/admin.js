@@ -1,5 +1,7 @@
 // POST /api/admin   body: { token }
 // Devuelve el resumen de confirmaciones SOLO si token === env.ADMIN_TOKEN.
+// Es el UNICO endpoint que expone telefono y responsable de cada familia
+// (la invitacion publica, /api/verify, nunca los devuelve).
 // El token es un secreto de Pages (no vive en el repo):
 //   npx wrangler pages secret put ADMIN_TOKEN --project-name=wedding-invite
 export async function onRequestPost(context) {
@@ -16,30 +18,24 @@ export async function onRequestPost(context) {
 
   const db = env.rsvp;
 
-  const totals = await db.prepare(
-    `SELECT
-       (SELECT COUNT(*) FROM guests)                               AS familias,
-       (SELECT COUNT(*) FROM rsvp)                                 AS respondieron,
-       (SELECT COUNT(*) FROM rsvp WHERE asiste=1)                  AS confirmadas,
-       (SELECT COUNT(*) FROM rsvp WHERE asiste=0)                  AS declinadas,
-       (SELECT COALESCE(SUM(personas),0) FROM rsvp WHERE asiste=1) AS personas,
-       (SELECT COALESCE(SUM(asientos),0) FROM guests)              AS asientos_totales`
-  ).first();
-
+  // Los totales se calculan en el navegador a partir de estas dos listas, para
+  // que el filtro por responsable (Adriana / Rogelio) recalcule todo sin otra
+  // consulta y sin que los numeros se contradigan.
   const responses = (await db.prepare(
-    `SELECT g.nombre, g.asientos, r.asiste, r.personas, r.alergias, r.dieta, r.cancion, r.actualizado_en
+    `SELECT g.nombre, g.asientos, g.telefono, g.responsable,
+            r.asiste, r.personas, r.alergias, r.dieta, r.cancion, r.actualizado_en
        FROM rsvp r JOIN guests g ON g.codigo = r.codigo
       ORDER BY r.actualizado_en DESC`
   ).all()).results;
 
   const pending = (await db.prepare(
-    `SELECT g.nombre, g.asientos
+    `SELECT g.nombre, g.asientos, g.telefono, g.responsable
        FROM guests g LEFT JOIN rsvp r ON r.codigo = g.codigo
       WHERE r.codigo IS NULL
       ORDER BY g.nombre`
   ).all()).results;
 
-  return json({ ok: true, totals, responses, pending });
+  return json({ ok: true, responses, pending });
 }
 
 function json(obj, status = 200) {

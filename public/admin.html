@@ -43,6 +43,26 @@
   .top .sub{color:var(--muted);font-size:14px;margin-top:2px}
   .actions{display:flex;gap:8px;flex-wrap:wrap}
 
+  /* ---- filtro por responsable ---- */
+  .segs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+  .seg{display:inline-flex;align-items:baseline;gap:7px;padding:7px 16px;border-radius:999px;
+    border:1.5px solid #c1cbb4;background:transparent;color:var(--green);font:inherit;font-size:14px;
+    cursor:pointer;transition:background .15s}
+  .seg:hover{background:#eef1e7}
+  .seg.on{background:var(--green);color:#f7f4ea;border-color:var(--green)}
+  .seg .n{font-size:12.5px;opacity:.75;font-variant-numeric:tabular-nums}
+
+  /* ---- quién invita / teléfono ---- */
+  .who{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:600;
+    letter-spacing:.02em;white-space:nowrap}
+  .who.a{background:#f3e3e6;color:#96525f}
+  .who.r{background:#e2ebdb;color:#456038}
+  .who.x{background:#ece7da;color:var(--muted)}
+  .sub2{margin-top:3px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;
+    align-items:center;gap:7px}
+  a.tel{color:var(--gold);text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap}
+  a.tel:hover{text-decoration:underline}
+
   /* ---- tiles ---- */
   .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
   .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;
@@ -121,6 +141,8 @@
       </div>
     </div>
 
+    <div class="segs" id="segs"></div>
+
     <div class="tiles" id="tiles"></div>
 
     <div class="panel">
@@ -136,7 +158,7 @@
     <div class="scroll">
       <table>
         <thead><tr>
-          <th>Familia</th><th>Asiste</th><th>Personas</th><th>Alergias</th>
+          <th>Familia · quién invita · teléfono</th><th>Asiste</th><th>Personas</th><th>Alergias</th>
           <th>Dieta</th><th>Canción</th><th>Actualizado</th>
         </tr></thead>
         <tbody id="rows"></tbody>
@@ -160,11 +182,37 @@
 <script>
 const API = "/api/admin";
 const KEY = "wi-admin-token";
+const FKEY = "wi-admin-filtro";
 let DATA = null;
+let FILTRO = localStorage.getItem(FKEY) || "todos";   // "todos" | "Adriana" | "Rogelio" | ""
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const dash = v => (v == null || String(v).trim() === "") ? '<span class="muted">—</span>' : esc(v);
+
+// --- quién invita y teléfono ------------------------------------------------
+const esDe = r => FILTRO === "todos" || (r.responsable || "").trim() === FILTRO;
+
+function chipWho(resp){
+  const r = (resp || "").trim();
+  if(!r) return `<span class="who x">sin asignar</span>`;
+  const cls = r.toLowerCase().startsWith("a") ? "a" : r.toLowerCase().startsWith("r") ? "r" : "x";
+  return `<span class="who ${cls}">${esc(r)}</span>`;
+}
+
+// El teléfono viene en E.164 sin '+' (503…, 1…, 39…) tal como lo pide wa.me.
+function fmtTel(t){
+  const s = String(t ?? "").replace(/\D/g, "");
+  if(!s) return "";
+  if(s.startsWith("503") && s.length === 11) return `+503 ${s.slice(3,7)} ${s.slice(7)}`;
+  if(s.startsWith("1")   && s.length === 11) return `+1 (${s.slice(1,4)}) ${s.slice(4,7)}-${s.slice(7)}`;
+  return "+" + s;
+}
+function linkTel(t){
+  const s = String(t ?? "").replace(/\D/g, "");
+  if(!s) return `<span class="muted">sin teléfono</span>`;
+  return `<a class="tel" href="https://wa.me/${s}" target="_blank" rel="noopener">${esc(fmtTel(s))}</a>`;
+}
 
 function fmtDate(s){
   if(!s) return "—";
@@ -183,6 +231,10 @@ async function load(){
     if(res.status === 500){ showLogin("Falta configurar ADMIN_TOKEN en el servidor."); return; }
     if(!res.ok){ showLogin("No se pudo cargar. Inténtalo de nuevo."); return; }
     DATA = await res.json();
+    // Si el filtro guardado ya no existe en los datos, volver a "Ambos".
+    const validos = new Set(["todos", ...[...DATA.responses, ...DATA.pending]
+      .map(g => (g.responsable || "").trim())]);
+    if(!validos.has(FILTRO)){ FILTRO = "todos"; localStorage.setItem(FKEY, FILTRO); }
     render(DATA);
     showDash();
   }catch(e){ showLogin("Sin conexión. Revisa tu internet."); }
@@ -197,9 +249,48 @@ function tile(color,label,num,foot){
     `<div class="num">${num}</div>${foot?`<div class="foot">${foot}</div>`:""}</div>`;
 }
 
+// Totales calculados en el navegador: así el filtro por responsable recalcula
+// tiles, barra y listas sin volver a consultar el servidor.
+function stats(responses, pending){
+  const s = {
+    familias: responses.length + pending.length,
+    respondieron: responses.length,
+    confirmadas: responses.filter(r => r.asiste).length,
+    declinadas: responses.filter(r => !r.asiste).length,
+    personas: responses.reduce((n,r) => n + (r.asiste ? (r.personas||0) : 0), 0),
+    asientos_totales: [...responses, ...pending].reduce((n,r) => n + (r.asientos||0), 0),
+  };
+  return s;
+}
+
+function renderSegs(){
+  const resp = DATA.responses, pend = DATA.pending;
+  const todos = [...resp, ...pend];
+  const nombres = [...new Set(todos.map(g => (g.responsable || "").trim()).filter(Boolean))].sort();
+  if(todos.some(g => !(g.responsable || "").trim())) nombres.push("");
+
+  const btn = (val, txt) => {
+    const grupo = val === "todos" ? todos : todos.filter(g => (g.responsable||"").trim() === val);
+    const respondio = grupo.filter(g => g.actualizado_en != null).length;
+    return `<button class="seg${FILTRO === val ? " on" : ""}" data-v="${esc(val)}" type="button">`+
+           `${esc(txt)} <span class="n">${respondio}/${grupo.length}</span></button>`;
+  };
+
+  $("#segs").innerHTML = btn("todos", "Ambos") +
+    nombres.map(n => btn(n, n || "Sin asignar")).join("");
+  $("#segs").querySelectorAll(".seg").forEach(b => b.addEventListener("click", () => {
+    FILTRO = b.dataset.v;
+    localStorage.setItem(FKEY, FILTRO);
+    render(DATA);
+  }));
+}
+
 function render(d){
-  const t = d.totals;
-  const pend = t.familias - t.respondieron;
+  renderSegs();
+  const responses = d.responses.filter(esDe);
+  const pending   = d.pending.filter(esDe);
+  const t = stats(responses, pending);
+  const pend = pending.length;
   $("#updated").textContent = "Actualizado " + new Date().toLocaleString("es-SV",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
 
   $("#tiles").innerHTML =
@@ -216,14 +307,15 @@ function render(d){
     `<span class="it"><span class="dot" style="background:var(--no)"></span>No asistirán <b>${t.declinadas}</b></span>`+
     `<span class="it"><span class="dot" style="background:var(--wait)"></span>Sin responder <b>${pend}</b></span>`;
 
-  renderRows(d.responses);
+  renderRows(buscar(responses));
 
-  $("#pendCount").textContent = d.pending.length;
-  $("#pending").innerHTML = d.pending.length
-    ? d.pending.map(p=>`<li><span>${esc(p.nombre)}</span><span class="muted">${p.asientos} as.</span></li>`).join("")
+  $("#pendCount").textContent = pending.length;
+  $("#pending").innerHTML = pending.length
+    ? pending.map(p=>`<li><span>${esc(p.nombre)} ${chipWho(p.responsable)}</span>`+
+        `<span class="muted">${linkTel(p.telefono)} · ${p.asientos} as.</span></li>`).join("")
     : `<li class="muted">Todos respondieron 🎉</li>`;
 
-  const songs = d.responses.filter(r=>r.cancion && r.cancion.trim());
+  const songs = responses.filter(r=>r.cancion && r.cancion.trim());
   $("#songCount").textContent = songs.length;
   $("#songs").innerHTML = songs.length
     ? songs.map(r=>`<li class="song"><span>${esc(r.cancion)}</span> <span class="who">${esc(r.nombre)}</span></li>`).join("")
@@ -238,7 +330,10 @@ function renderRows(list){
       ? `<span class="pill yes">✓ Sí</span>`
       : `<span class="pill no">✕ No</span>`;
     return `<tr>
-      <td class="nombre">${esc(r.nombre)}</td>
+      <td>
+        <div class="nombre">${esc(r.nombre)}</div>
+        <div class="sub2">${chipWho(r.responsable)}${linkTel(r.telefono)}</div>
+      </td>
       <td>${pill}</td>
       <td>${r.asiste ? `${r.personas} <span class="muted">/ ${r.asientos}</span>` : `<span class="muted">—</span>`}</td>
       <td>${dash(r.alergias)}</td>
@@ -249,11 +344,21 @@ function renderRows(list){
   }).join("");
 }
 
+// Búsqueda: solo filtra la tabla (los totales siguen siendo los del responsable
+// seleccionado, para que buscar no cambie los números).
+function buscar(list){
+  const q = ($("#search").value || "").toLowerCase().trim();
+  if(!q) return list;
+  return list.filter(r => [r.nombre,r.cancion,r.alergias,r.dieta,r.responsable,r.telefono]
+    .some(x => String(x ?? "").toLowerCase().includes(q)));
+}
+
 function toCSV(list){
-  const head = ["Familia","Asiste","Personas","Asientos","Alergias","Dieta","Cancion","Actualizado"];
+  const head = ["Familia","Invita","Telefono","Asiste","Personas","Asientos","Alergias","Dieta","Cancion","Actualizado"];
   const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
   const lines = [head.join(",")].concat(list.map(r=>[
-    r.nombre, r.asiste?"Si":"No", r.asiste?r.personas:0, r.asientos,
+    r.nombre, r.responsable||"", r.telefono ? "+"+r.telefono : "",
+    r.asiste?"Si":"No", r.asiste?r.personas:0, r.asientos,
     r.alergias||"", r.dieta||"", r.cancion||"", r.actualizado_en
   ].map(q).join(",")));
   return lines.join("\r\n");
@@ -272,18 +377,16 @@ $("#btnRefresh").addEventListener("click", load);
 $("#btnLogout").addEventListener("click", ()=>{ localStorage.removeItem(KEY); showLogin(); });
 $("#btnCsv").addEventListener("click", ()=>{
   if(!DATA) return;
-  const blob = new Blob([toCSV(DATA.responses)], {type:"text/csv;charset=utf-8"});
+  // Exporta lo que se está viendo (según el filtro de quién invita).
+  const blob = new Blob([toCSV(DATA.responses.filter(esDe))], {type:"text/csv;charset=utf-8"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "confirmaciones.csv";
+  a.download = FILTRO === "todos" ? "confirmaciones.csv" : `confirmaciones-${FILTRO || "sin-asignar"}.csv`;
   a.click(); URL.revokeObjectURL(a.href);
 });
-$("#search").addEventListener("input", e=>{
+$("#search").addEventListener("input", ()=>{
   if(!DATA) return;
-  const q = e.target.value.toLowerCase().trim();
-  const f = !q ? DATA.responses : DATA.responses.filter(r=>
-    [r.nombre,r.cancion,r.alergias,r.dieta].some(x=>(x||"").toLowerCase().includes(q)));
-  renderRows(f);
+  renderRows(buscar(DATA.responses.filter(esDe)));
 });
 
 load();
