@@ -11,7 +11,7 @@ Adding a guest = append to the source CSV, regenerate codes, insert the new row 
 
 1. **Get the details** (ask if not given): the family/display **name**, the **max seats** (integer), their **phone** (international format) and the **responsable** — which of the two is inviting them, `Adriana` or `Rogelio`. Phone and responsable may be left empty, but ask: without a phone they can't be messaged from `envios.html` or `/admin.html`.
 
-2. **Append to the source CSV** `../backend/asientos_reservados.csv` (header `Familia,ASIENTOS_RESERVADO,Telefono,Responsable`). Add ONE line at the **end** — never reorder or insert in the middle; appending keeps every existing code unchanged:
+2. **Add a line to the source CSV** `../backend/asientos_reservados.csv` (header `Familia,ASIENTOS_RESERVADO,Telefono,Responsable`). Anywhere in the file — order no longer matters (see step 3):
    ```
    Nombre De La Familia,N,+503 7000 1234,Adriana
    ```
@@ -21,7 +21,7 @@ Adding a guest = append to the source CSV, regenerate codes, insert the new row 
    ```bash
    python3 ../backend/generate_codes.py
    ```
-   Rewrites `../backend/{codigos.csv,guests.json,seed.sql}`. Existing codes stay identical (fixed seed + append-only); the new family gets a fresh unique 5-char code. Check the printed summary for phone warnings.
+   Rewrites `../backend/{codigos.csv,guests.json,seed.sql}`. `codigos.csv` doubles as the **code ledger**: each family is matched by phone, or by accent-insensitive name when it has none, so renaming, fixing accents, reordering or inserting rows never changes an already-issued code. Only genuinely new rows get a code, and the summary prints exactly which. Codes ever issued are also appended to `codigos_usados.txt` so a deleted family's code is never handed to someone else — never delete either file.
 
 4. **Read the new code** from `../backend/codigos.csv` (the row whose `Familia` matches the name you added).
 
@@ -47,6 +47,7 @@ Adding a guest = append to the source CSV, regenerate codes, insert the new row 
 
 ## Notes
 - Codes are 5 chars from `ABCDEFGHJKMNPQRSTUVWXYZ23456789` (no 0/1/I/L/O), unique. `codigo` is the primary key, so a duplicate INSERT fails loudly; if that ever happens, re-run the generator (it picks a different code) — extremely rare.
+- The WhatsApp message template (`PLANTILLA` in `whatsapp_links.py`) must use **BMP-only emoji** (U+FFFF or below: ✨ ❤️ ♥ ★ ✔). Modern 4-byte emoji (💍 🤍 🥂) arrive corrupted through `wa.me` on some clients; the script warns if any slip in.
 - Adding several at once: append all lines to the CSV, run the generator once, then run `seed.sql` once.
 - To remove a guest: delete their line from `../backend/asientos_reservados.csv`, re-run the generator, then run `seed.sql` — its trailing `DELETE … WHERE codigo NOT IN (…)` removes them, unless they already answered (that row is kept on purpose so no confirmation is lost; delete it by hand from `rsvp` first if you really mean it).
 - `telefono` and `responsable` are only ever exposed through `/api/admin` (password-gated). Never surface them in `index.html` or `/api/verify`.

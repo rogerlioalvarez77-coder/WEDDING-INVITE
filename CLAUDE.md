@@ -43,6 +43,8 @@ The D1 binding variable is `rsvp`. Private data (guest list, schema, seed) and t
 
 `guests` columns: `codigo, nombre, asientos, telefono, responsable`. Source of truth is `../backend/asientos_reservados.csv` → `python3 generate_codes.py` → `seed.sql` (an idempotent UPSERT — re-running never wipes `rsvp` rows).
 
+Codes are **never** regenerated: `../backend/codigos.csv` is the ledger the generator reads back (matching each family by phone, else by accent-insensitive name), and `codigos_usados.txt` keeps every code ever issued. So the CSV can be reordered, renamed or corrected freely; only new rows get new codes. Neither file may be deleted.
+
 ## Local preview
 
 Static only (no backend):
