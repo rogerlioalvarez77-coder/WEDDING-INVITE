@@ -169,6 +169,7 @@
     <div class="segs" id="segs"></div>
 
     <div class="tiles" id="tiles"></div>
+    <div class="tiles" id="tilesCupo"></div>
 
     <div class="panel">
       <h2>Avance de respuestas</h2>
@@ -231,6 +232,9 @@
 const API = "/api/admin";
 const KEY = "wi-admin-token";
 const FKEY = "wi-admin-filtro";
+// Capacidad del salón: 150 personas = 148 invitados + los 2 novios.
+const CUPO_MAXIMO = 150;
+const NOVIOS = 2;
 let DATA = null;
 let FILTRO = localStorage.getItem(FKEY) || "todos";   // "todos" | "Adriana" | "Rogelio" | ""
 
@@ -346,14 +350,24 @@ function render(d){
   const pend = pending.length;
   $("#updated").textContent = "Actualizado " + new Date().toLocaleString("es-SV",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
 
+  const confirmadosTodos = stats(d.responses, d.pending).personas;
+  const restantes = CUPO_MAXIMO - NOVIOS - confirmadosTodos;
   $("#tiles").innerHTML =
     tile("", "Familias invitadas", t.familias, `${t.asientos_totales} asientos reservados`) +
     tile("var(--ok)",   "Confirmadas",     t.confirmadas, `${t.personas} personas asistirán`) +
     tile("var(--no)",   "No asistirán",    t.declinadas, "&nbsp;") +
-    tile("var(--wait)", "Sin responder",   pend, `${Math.round((t.respondieron/(t.familias||1))*100)}% ya respondió`) +
+    tile("var(--wait)", "Sin responder",   pend, `${Math.round((t.respondieron/(t.familias||1))*100)}% ya respondió`);
+
+  $("#tilesCupo").innerHTML =
     tile("var(--gold)", "Asientos disponibles", t.libres_no + t.libres_parcial,
       `${t.libres_no} por ${t.declinadas} familia${t.declinadas === 1 ? "" : "s"} que no irá${t.declinadas === 1 ? "" : "n"} · `+
-      `${t.libres_parcial} por ${t.parciales} que van incompleta${t.parciales === 1 ? "" : "s"}`);
+      `${t.libres_parcial} por ${t.parciales} que van incompleta${t.parciales === 1 ? "" : "s"}`) +
+    // El cupo es uno solo para todos: se calcula siempre sobre Ambos, aunque
+    // esté filtrado por Adriana o Rogelio.
+    tile("", "Cupo máximo", CUPO_MAXIMO, `${CUPO_MAXIMO - NOVIOS} invitados + ${NOVIOS} novios`) +
+    tile("var(--green)", "Cupos restantes", restantes,
+      `${CUPO_MAXIMO} − ${NOVIOS} novios − ${confirmadosTodos} confirmados` +
+      (FILTRO !== "todos" ? " (de ambos)" : ""));
 
   // meter (segmentos etiquetados en la leyenda)
   const seg = (n,c) => t.familias ? `<span style="width:${(n/t.familias*100).toFixed(2)}%;background:${c}"></span>` : "";
