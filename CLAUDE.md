@@ -31,13 +31,19 @@ The git repo root is **also** the Cloudflare Pages project. Only `public/` is se
 The form posts to Pages Functions backed by D1 (SQLite):
 - `functions/api/verify.js` — validates the code against D1 (guest list never ships in the HTML) and returns any prior answer (`ya` / `previo`).
 - `functions/api/rsvp.js` — stores the confirmation (upsert; enforces the seat cap server-side).
-- `functions/api/admin.js` — token-gated (`ADMIN_TOKEN`) dump of `responses` + `pending` for `public/admin.html`. It is the **only** endpoint that returns `guests.telefono` / `guests.responsable`; keep it that way. Totals are computed in the browser so the Adriana/Rogelio filter recalculates without another query.
+- `functions/api/admin.js` — token-gated (`ADMIN_TOKEN`) dump of `responses` + `pending` (with `codigo`) for `public/admin.html`. Totals (incl. "Asientos disponibles" = seats of declined families + unused seats of partial confirmations) are computed in the browser so the Adriana/Rogelio filter recalculates without another query.
+- `functions/api/admin-rsvp.js` — token-gated manual RSVP edit from the admin panel (asiste/personas, or `borrar` to return the family to pending). Keeps alergias/dieta/cancion.
+- `functions/api/invitados.js` — token-gated list/add/modify guests for `public/envios.html` (WhatsApp sender). Same validation as `generate_codes.py` (phone normalization, Adriana/Rogelio, no duplicate phone/name); new codes avoid the D1 table `codigos_usados`.
+- Only `admin.js` and `invitados.js` return `guests.telefono` / `guests.responsable`, both behind `ADMIN_TOKEN`; keep it that way. `public/envios.html` has **no data baked in** (unlike the old generated `../backend/envios.html`) — never embed guest data in a file under `public/`.
+
+Since guests can be edited from `/envios.html`, D1 can be ahead of the local CSV. `exec_process.sh` runs `../backend/sync_desde_d1.py --check` first and aborts if D1 differs from `codigos.csv`; `python3 sync_desde_d1.py` pulls D1 back into the CSV/ledger.
 
 Invitations go out by WhatsApp with the code in the URL (`/?c=RD273`). `index.html` reads
 it in the state initializer (`codeFromUrl()`) and auto-verifies on mount, so the form
 arrives already personalized. If they already answered, they see that answer plus a
-"Modificar respuesta" button instead of a blank form. The sending tool lives in
-`../backend/whatsapp_links.py`.
+"Modificar respuesta" button instead of a blank form. The sending tool is
+`public/envios.html` (served at `/envios`, data from `/api/invitados`); its message
+template `PLANTILLA` duplicates the one in `../backend/whatsapp_links.py` (local, offline variant) — keep both in sync.
 
 The D1 binding variable is `rsvp`. Private data (guest list, schema, seed) and the full setup/deploy/export runbook live in `../backend/` (`README.md` = reference, `COMO-HACER-CAMBIOS.md` = per-scenario playbook for guest-list edits).
 

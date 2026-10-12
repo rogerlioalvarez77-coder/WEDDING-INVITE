@@ -87,7 +87,7 @@
   .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:4px 0 10px}
   .toolbar .search{max-width:280px;flex:1 1 200px}
   .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card)}
-  table{border-collapse:collapse;width:100%;font-size:14px;min-width:720px}
+  table{border-collapse:collapse;width:100%;font-size:14px;min-width:800px}
   th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
   th{background:#f0ead9;color:var(--green);font-weight:600;font-size:12.5px;text-transform:uppercase;
     letter-spacing:.04em;position:sticky;top:0}
@@ -108,8 +108,32 @@
     justify-content:space-between;gap:12px}
   ul.list li:last-child{border-bottom:none}
   .song{color:var(--ink)} .song .who{color:var(--muted);font-size:12.5px}
-  .hidden{display:none}
+  .hidden{display:none !important}
   a.link{color:var(--gold)}
+  .parcial{display:block;font-size:12px;color:var(--no);white-space:nowrap}
+
+  /* ---- editar respuesta a mano ---- */
+  .mini{padding:5px 12px;font-size:13px;border-radius:999px;border:1.5px solid #c1cbb4;background:transparent;
+    color:var(--green);cursor:pointer;font:inherit;font-size:13px;white-space:nowrap}
+  .mini:hover{background:#eef1e7}
+  dialog{border:1px solid var(--line);border-radius:18px;padding:0;width:min(92vw,460px);
+    background:var(--card);color:var(--ink);box-shadow:0 24px 60px rgba(0,0,0,.25)}
+  dialog::backdrop{background:rgba(30,36,28,.45)}
+  .dlg{padding:24px 24px 20px}
+  .dlg h2{font-size:26px;color:var(--green)}
+  .dlg .sub{color:var(--muted);font-size:13.5px;margin:2px 0 16px}
+  .opts{display:flex;gap:8px;margin-bottom:14px}
+  .opts label{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;
+    border:1.5px solid #c1cbb4;border-radius:12px;cursor:pointer;font-size:14.5px}
+  .opts input{accent-color:var(--green)}
+  .opts label:has(input:checked){background:#eef1e7;border-color:var(--green);font-weight:600}
+  .field{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;font-size:14.5px}
+  .field input{width:84px;padding:9px 10px;border:1px solid #c6ceba;border-radius:10px;font:inherit;
+    font-size:16px;text-align:center;background:#fffef9;color:var(--ink)}
+  .resumen{font-size:13.5px;color:var(--muted);min-height:20px;margin-bottom:6px}
+  .dlg .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+  .btn.warn{background:transparent;color:var(--no);border:1.5px solid #e2b9ac;margin-right:auto}
+  .btn.warn:hover{background:#f9ece7}
 </style>
 </head>
 <body>
@@ -135,6 +159,7 @@
         <div class="sub" id="updated"></div>
       </div>
       <div class="actions">
+        <a class="btn ghost" href="/envios.html" style="text-decoration:none">Envíos e invitados</a>
         <button class="btn ghost" id="btnCsv" type="button">Exportar CSV</button>
         <button class="btn ghost" id="btnRefresh" type="button">↻ Actualizar</button>
         <button class="btn ghost" id="btnLogout" type="button">Salir</button>
@@ -159,7 +184,7 @@
       <table>
         <thead><tr>
           <th>Familia · quién invita · teléfono</th><th>Asiste</th><th>Personas</th><th>Alergias</th>
-          <th>Dieta</th><th>Canción</th><th>Actualizado</th>
+          <th>Dieta</th><th>Canción</th><th>Actualizado</th><th></th>
         </tr></thead>
         <tbody id="rows"></tbody>
       </table>
@@ -178,6 +203,29 @@
   </div>
 
 </div>
+
+<!-- EDITAR RESPUESTA A MANO -->
+<dialog id="dlg">
+  <form class="dlg" id="dlgForm" method="dialog">
+    <h2 id="dlgNombre"></h2>
+    <div class="sub" id="dlgSub"></div>
+    <div class="opts">
+      <label><input type="radio" name="asiste" value="1"> Sí asistirán</label>
+      <label><input type="radio" name="asiste" value="0"> No asistirán</label>
+    </div>
+    <div class="field" id="dlgPersonasRow">
+      <span>Personas que asistirán</span>
+      <input type="number" id="dlgPersonas" min="1" step="1" inputmode="numeric">
+    </div>
+    <div class="resumen" id="dlgResumen"></div>
+    <div class="err" id="dlgErr"></div>
+    <div class="row">
+      <button class="btn warn" type="button" id="dlgBorrar">Quitar respuesta</button>
+      <button class="btn ghost" type="button" id="dlgCancel">Cancelar</button>
+      <button class="btn" type="submit" id="dlgOk">Guardar</button>
+    </div>
+  </form>
+</dialog>
 
 <script>
 const API = "/api/admin";
@@ -259,6 +307,11 @@ function stats(responses, pending){
     declinadas: responses.filter(r => !r.asiste).length,
     personas: responses.reduce((n,r) => n + (r.asiste ? (r.personas||0) : 0), 0),
     asientos_totales: [...responses, ...pending].reduce((n,r) => n + (r.asientos||0), 0),
+    // Asientos que quedan libres: toda la reserva de quien no va, y lo que sobra
+    // de quien confirmó menos personas que sus asientos (ej. de 2 solo va 1).
+    libres_no: responses.reduce((n,r) => n + (r.asiste ? 0 : (r.asientos||0)), 0),
+    libres_parcial: responses.reduce((n,r) => n + (r.asiste ? Math.max(0, (r.asientos||0) - (r.personas||0)) : 0), 0),
+    parciales: responses.filter(r => r.asiste && (r.personas||0) < (r.asientos||0)).length,
   };
   return s;
 }
@@ -297,7 +350,10 @@ function render(d){
     tile("", "Familias invitadas", t.familias, `${t.asientos_totales} asientos reservados`) +
     tile("var(--ok)",   "Confirmadas",     t.confirmadas, `${t.personas} personas asistirán`) +
     tile("var(--no)",   "No asistirán",    t.declinadas, "&nbsp;") +
-    tile("var(--wait)", "Sin responder",   pend, `${Math.round((t.respondieron/(t.familias||1))*100)}% ya respondió`);
+    tile("var(--wait)", "Sin responder",   pend, `${Math.round((t.respondieron/(t.familias||1))*100)}% ya respondió`) +
+    tile("var(--gold)", "Asientos disponibles", t.libres_no + t.libres_parcial,
+      `${t.libres_no} por ${t.declinadas} familia${t.declinadas === 1 ? "" : "s"} que no irá${t.declinadas === 1 ? "" : "n"} · `+
+      `${t.libres_parcial} por ${t.parciales} que van incompleta${t.parciales === 1 ? "" : "s"}`);
 
   // meter (segmentos etiquetados en la leyenda)
   const seg = (n,c) => t.familias ? `<span style="width:${(n/t.familias*100).toFixed(2)}%;background:${c}"></span>` : "";
@@ -312,7 +368,8 @@ function render(d){
   $("#pendCount").textContent = pending.length;
   $("#pending").innerHTML = pending.length
     ? pending.map(p=>`<li><span>${esc(p.nombre)} ${chipWho(p.responsable)}</span>`+
-        `<span class="muted">${linkTel(p.telefono)} · ${p.asientos} as.</span></li>`).join("")
+        `<span class="muted">${linkTel(p.telefono)} · ${p.asientos} as. `+
+        `<button class="mini" type="button" data-edit="${esc(p.codigo)}">Registrar</button></span></li>`).join("")
     : `<li class="muted">Todos respondieron 🎉</li>`;
 
   const songs = responses.filter(r=>r.cancion && r.cancion.trim());
@@ -324,7 +381,7 @@ function render(d){
 
 function renderRows(list){
   const rows = $("#rows");
-  if(!list.length){ rows.innerHTML = `<tr><td colspan="7" class="empty">Aún no hay confirmaciones.</td></tr>`; return; }
+  if(!list.length){ rows.innerHTML = `<tr><td colspan="8" class="empty">Aún no hay confirmaciones.</td></tr>`; return; }
   rows.innerHTML = list.map(r=>{
     const pill = r.asiste
       ? `<span class="pill yes">✓ Sí</span>`
@@ -335,11 +392,14 @@ function renderRows(list){
         <div class="sub2">${chipWho(r.responsable)}${linkTel(r.telefono)}</div>
       </td>
       <td>${pill}</td>
-      <td>${r.asiste ? `${r.personas} <span class="muted">/ ${r.asientos}</span>` : `<span class="muted">—</span>`}</td>
+      <td>${r.asiste ? `${r.personas} <span class="muted">/ ${r.asientos}</span>` +
+        (r.personas < r.asientos ? `<span class="parcial">${r.asientos - r.personas} no ${r.asientos - r.personas === 1 ? "va" : "van"}</span>` : "")
+        : `<span class="muted">—</span>`}</td>
       <td>${dash(r.alergias)}</td>
       <td>${dash(r.dieta)}</td>
       <td>${dash(r.cancion)}</td>
       <td class="muted">${fmtDate(r.actualizado_en)}</td>
+      <td><button class="mini" type="button" data-edit="${esc(r.codigo)}">Editar</button></td>
     </tr>`;
   }).join("");
 }
@@ -387,6 +447,88 @@ $("#btnCsv").addEventListener("click", ()=>{
 $("#search").addEventListener("input", ()=>{
   if(!DATA) return;
   renderRows(buscar(DATA.responses.filter(esDe)));
+});
+
+// ---- editar respuesta a mano ----
+// Para cuando avisan por WhatsApp o en persona: "no vamos", "de 4 solo vamos 2".
+// Guarda en /api/admin-rsvp (conserva alergias/dieta/canción) y recarga todo.
+let EDIT = null;
+const dlg = $("#dlg");
+
+function abrirEditor(codigo){
+  if(!DATA) return;
+  const r = DATA.responses.find(x => x.codigo === codigo);
+  const p = r || DATA.pending.find(x => x.codigo === codigo);
+  if(!p) return;
+  EDIT = p;
+  $("#dlgNombre").textContent = p.nombre;
+  $("#dlgSub").textContent = `${p.asientos} asiento${p.asientos === 1 ? "" : "s"} reservado${p.asientos === 1 ? "" : "s"} · ` +
+    (r ? `respondió ${fmtDate(r.actualizado_en)}` : "sin responder");
+  const asiste = r ? !!r.asiste : true;
+  dlg.querySelector(`input[name=asiste][value="${asiste ? 1 : 0}"]`).checked = true;
+  $("#dlgPersonas").max = p.asientos;
+  $("#dlgPersonas").value = r && r.asiste ? r.personas : p.asientos;
+  $("#dlgBorrar").hidden = !r;
+  $("#dlgErr").textContent = "";
+  syncEditor();
+  dlg.showModal();
+}
+
+function syncEditor(){
+  const si = dlg.querySelector("input[name=asiste]:checked")?.value === "1";
+  $("#dlgPersonasRow").hidden = !si;
+  const max = EDIT.asientos;
+  const n = parseInt($("#dlgPersonas").value, 10);
+  if(!si){ $("#dlgResumen").textContent = `Se liberan los ${max} asiento${max === 1 ? "" : "s"}.`; return; }
+  if(!Number.isFinite(n) || n < 1 || n > max){ $("#dlgResumen").textContent = `Debe ser entre 1 y ${max}.`; return; }
+  const libres = max - n;
+  $("#dlgResumen").textContent = libres
+    ? `${libres} no asistirá${libres === 1 ? "" : "n"} · se libera${libres === 1 ? "" : "n"} ${libres} asiento${libres === 1 ? "" : "s"}.`
+    : "Asisten todos.";
+}
+
+async function guardarEditor(payload){
+  $("#dlgErr").textContent = "";
+  $("#dlgOk").disabled = $("#dlgBorrar").disabled = true;
+  try{
+    const res = await fetch("/api/admin-rsvp", {method:"POST",headers:{"content-type":"application/json"},
+      body: JSON.stringify({token: localStorage.getItem(KEY), codigo: EDIT.codigo, ...payload})});
+    const j = await res.json().catch(() => ({}));
+    if(res.status === 401){ dlg.close(); localStorage.removeItem(KEY); showLogin("Contraseña incorrecta."); return; }
+    if(!res.ok || !j.ok){
+      $("#dlgErr").textContent = j.error === "excede_asientos" ? `Máximo ${j.max} personas.`
+        : j.error === "personas_invalidas" ? "Indica cuántas personas asistirán."
+        : "No se pudo guardar. Inténtalo de nuevo.";
+      return;
+    }
+    dlg.close();
+    await load();
+  }catch(e){ $("#dlgErr").textContent = "Sin conexión. Revisa tu internet."; }
+  finally{ $("#dlgOk").disabled = $("#dlgBorrar").disabled = false; }
+}
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-edit]");
+  if(b) abrirEditor(b.dataset.edit);
+});
+dlg.querySelectorAll("input[name=asiste]").forEach(i => i.addEventListener("change", syncEditor));
+$("#dlgPersonas").addEventListener("input", syncEditor);
+$("#dlgCancel").addEventListener("click", () => dlg.close());
+$("#dlgForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const si = dlg.querySelector("input[name=asiste]:checked")?.value === "1";
+  const n = parseInt($("#dlgPersonas").value, 10);
+  if(si && (!Number.isFinite(n) || n < 1 || n > EDIT.asientos)){
+    $("#dlgErr").textContent = `Indica entre 1 y ${EDIT.asientos} personas.`; return;
+  }
+  guardarEditor({asiste: si, personas: si ? n : 0});
+});
+$("#dlgBorrar").addEventListener("click", () => {
+  // Sin confirm(): el botón pide un segundo clic para confirmar.
+  const b = $("#dlgBorrar");
+  if(b.dataset.armed){ delete b.dataset.armed; b.textContent = "Quitar respuesta"; guardarEditor({borrar: true}); return; }
+  b.dataset.armed = "1"; b.textContent = "¿Seguro? Clic otra vez";
+  setTimeout(() => { delete b.dataset.armed; b.textContent = "Quitar respuesta"; }, 3000);
 });
 
 load();

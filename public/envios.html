@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Envío de invitaciones — Adriana & Rogelio</title>
+<style>
+  :root{ --verde:#3e5238; --oro:#8a6a34; --papel:#fcfaf4; --linea:#e2ddcf; --texto:#2e3630; --suave:#6b7a60; --no:#c0674f; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#f4f1e8; color:var(--texto);
+        font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header{ background:var(--verde); color:#f7f4ea; padding:18px 20px; }
+  header .in{ max-width:980px; margin:0 auto; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
+  header h1{ margin:0; font-size:20px; font-weight:600; }
+  header p{ margin:4px 0 0; opacity:.85; font-size:14px; }
+  header nav{ display:flex; gap:8px; }
+  header nav a, header nav button{ color:#f7f4ea; border:1px solid rgba(255,255,255,.35); background:transparent;
+        border-radius:8px; padding:6px 12px; font-size:14px; text-decoration:none; }
+  header nav a:hover, header nav button:hover{ background:rgba(255,255,255,.1); }
+  .wrap{ max-width:980px; margin:0 auto; padding:20px; }
+  .barra{ position:sticky; top:0; z-index:5; background:var(--papel);
+          border:1px solid var(--linea); border-radius:12px; padding:14px;
+          display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+          box-shadow:0 2px 10px rgba(0,0,0,.06); margin-bottom:16px; }
+  .prog{ font-weight:600; color:var(--verde); }
+  .prog small{ font-weight:400; color:var(--suave); }
+  input[type=search], input[type=text], input[type=tel], input[type=number], input[type=password], select{
+        padding:8px 10px; border:1px solid #c3cbb8; border-radius:8px;
+        font:inherit; background:#fff; color:var(--texto); }
+  input[type=search]{ flex:1; min-width:170px; }
+  button{ font:inherit; cursor:pointer; border-radius:8px; padding:8px 14px; border:1px solid transparent; }
+  button:disabled{ opacity:.6; cursor:default; }
+  .btn-w{ background:#25D366; color:#0a2e18; font-weight:600; }
+  .btn-w:hover{ filter:brightness(1.05); }
+  .btn-g{ background:#fff; border-color:#c3cbb8; color:var(--texto); }
+  .btn-g:hover{ background:#f2f0e6; }
+  .btn-v{ background:var(--verde); color:#f7f4ea; font-weight:600; }
+  .btn-v:hover{ background:#33452e; }
+  table{ width:100%; border-collapse:collapse; background:var(--papel);
+         border:1px solid var(--linea); border-radius:12px; overflow:hidden; }
+  th,td{ padding:10px 12px; text-align:left; border-bottom:1px solid var(--linea); vertical-align:middle; }
+  th{ background:#eee9dc; font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--suave); }
+  tr:last-child td{ border-bottom:none; }
+  tr.enviado{ background:#f0f5ec; }
+  tr.enviado .nombre{ color:var(--suave); }
+  tr.nuevo{ outline:2px solid var(--oro); outline-offset:-2px; }
+  .nombre{ font-weight:600; }
+  .meta{ font-size:13px; color:var(--suave); }
+  code{ background:#eee9dc; padding:2px 7px; border-radius:5px; font-size:14px; letter-spacing:.08em; }
+  .acc{ display:flex; gap:6px; justify-content:flex-end; white-space:nowrap; align-items:center; }
+  .chip{ display:inline-block; white-space:nowrap; font-size:12px; padding:2px 8px; border-radius:999px; background:#e3ecd9; color:var(--verde); margin-right:4px; }
+  .chip.resp{ background:#dfeaf7; color:#2c5580; }
+  .chip.no{ background:#f6e4de; color:#9c4531; }
+  .aviso{ background:#fff8e6; border:1px solid #e8d9a8; border-radius:10px;
+          padding:12px 14px; margin-bottom:16px; font-size:14px; }
+  .ok{ background:#eaf3e4; border:1px solid #bcd5ae; border-radius:10px; padding:12px 14px;
+       margin-bottom:16px; font-size:14.5px; }
+  h2{ font-size:16px; margin:26px 0 10px; color:var(--verde); }
+  .vacio{ padding:26px; text-align:center; color:var(--suave); }
+  .pie{ margin:22px 0 40px; font-size:13px; color:var(--suave); }
+  .err{ color:#a3452f; font-size:14px; margin-top:10px; min-height:18px; }
+  [hidden]{ display:none !important; }
+
+  /* login */
+  #login{ min-height:80vh; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .lcard{ background:var(--papel); border:1px solid var(--linea); border-radius:16px; padding:30px 26px;
+          width:min(92vw,380px); box-shadow:0 20px 50px rgba(0,0,0,.12); text-align:center; }
+  .lcard h1{ margin:0 0 4px; color:var(--verde); font-size:24px; }
+  .lcard p{ color:var(--suave); margin:0 0 18px; font-size:14px; }
+  .lcard input{ width:100%; font-size:16px; padding:11px 12px; }
+  .lcard button{ width:100%; margin-top:12px; }
+
+  /* formulario de invitado */
+  dialog{ border:1px solid var(--linea); border-radius:16px; padding:0; width:min(94vw,440px);
+          background:var(--papel); color:var(--texto); box-shadow:0 24px 60px rgba(0,0,0,.25); }
+  dialog::backdrop{ background:rgba(30,36,28,.45); }
+  .dlg{ padding:22px 22px 18px; }
+  .dlg h3{ margin:0 0 2px; color:var(--verde); font-size:20px; }
+  .dlg .meta{ margin-bottom:14px; }
+  .dlg label{ display:block; font-size:13.5px; color:var(--suave); margin:10px 0 4px; }
+  .dlg input, .dlg select{ width:100%; font-size:16px; }
+  .dlg .hint{ font-size:12.5px; color:var(--suave); margin-top:3px; }
+  .dlg .fila{ display:flex; gap:10px; }
+  .dlg .fila > div{ flex:1; }
+  .dlg .botones{ display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+
+  @media(max-width:640px){
+    th:nth-child(3), td:nth-child(3){ display:none; }
+    .acc{ flex-direction:column; align-items:stretch; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN: mismo ADMIN_TOKEN que /admin.html (y se comparte la sesión) -->
+<div id="login">
+  <form class="lcard" id="loginForm">
+    <h1>Envío de invitaciones</h1>
+    <p>Adriana &amp; Rogelio</p>
+    <input type="password" id="pass" placeholder="Contraseña de administración" autocomplete="current-password" required>
+    <button class="btn-v" type="submit">Entrar</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</div>
+
+<div id="app" hidden>
+<header>
+  <div class="in">
+    <div>
+      <h1>Envío de invitaciones por WhatsApp</h1>
+      <p>Adriana &amp; Rogelio · 28 de noviembre de 2026</p>
+    </div>
+    <nav>
+      <a href="/admin.html">Confirmaciones</a>
+      <button type="button" id="salir">Salir</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="aviso">
+    Cada botón abre el chat de WhatsApp con el mensaje ya escrito: <strong>usted presiona Enviar</strong>.
+    Al abrirlo, la fila se marca como enviada automáticamente (puede desmarcarla).
+    Las marcas de "enviado" se guardan en este navegador.
+  </div>
+
+  <div class="ok" id="okMsg" hidden></div>
+
+  <div class="barra">
+    <span class="prog"><span id="n-env">0</span> / <span id="n-tot">0</span> enviados <small id="n-pend"></small></span>
+    <input type="search" id="q" placeholder="Buscar familia o código…">
+    <select id="filtro">
+      <option value="todos">Todos</option>
+      <option value="pendientes">Pendientes de enviar</option>
+      <option value="enviados">Ya enviados</option>
+      <option value="sinresp">Sin responder</option>
+    </select>
+    <select id="resp" title="Quién invita">
+      <option value="todos">Ambos</option>
+    </select>
+    <select id="modo" title="Cómo abrir WhatsApp">
+      <option value="app">Abrir en la app</option>
+      <option value="web">Abrir en WhatsApp Web</option>
+    </select>
+    <button class="btn-v" id="nuevo" type="button">+ Nuevo invitado</button>
+    <button class="btn-g" id="recargar" type="button">↻</button>
+    <button class="btn-g" id="exportar" type="button">Exportar CSV</button>
+    <button class="btn-g" id="reset" type="button">Reiniciar marcas</button>
+  </div>
+
+  <table>
+    <thead><tr>
+      <th>Familia</th><th>Código</th><th>Teléfono</th><th style="text-align:right">Acciones</th>
+    </tr></thead>
+    <tbody id="lista"></tbody>
+  </table>
+  <div class="vacio" id="vacio" hidden>Nada que mostrar con este filtro.</div>
+
+  <div id="bloque-sin" hidden>
+    <h2>Sin teléfono</h2>
+    <p class="meta">Use <strong>Editar</strong> para agregarle el número, o copie el mensaje y mándelo por otro medio.</p>
+    <table><tbody id="lista-sin"></tbody></table>
+  </div>
+
+  <p class="pie">Los datos vienen de la base (Cloudflare D1) y solo se muestran con la contraseña de administración.</p>
+</div>
+</div>
+
+<!-- AGREGAR / MODIFICAR INVITADO -->
+<dialog id="dlg">
+  <form class="dlg" id="form">
+    <h3 id="fTitulo">Nuevo invitado</h3>
+    <div class="meta" id="fSub"></div>
+
+    <label for="fNombre">Familia / invitado</label>
+    <input type="text" id="fNombre" maxlength="120" required autocomplete="off">
+
+    <div class="fila">
+      <div>
+        <label for="fAsientos">Asientos</label>
+        <input type="number" id="fAsientos" min="1" max="20" step="1" inputmode="numeric" required>
+      </div>
+      <div>
+        <label for="fResp">Quién invita</label>
+        <select id="fResp" required>
+          <option value="">— elegir —</option>
+          <option>Adriana</option>
+          <option>Rogelio</option>
+        </select>
+      </div>
+    </div>
+
+    <label for="fTel">Teléfono (WhatsApp)</label>
+    <input type="tel" id="fTel" autocomplete="off" placeholder="7189 4512">
+    <div class="hint">8 dígitos = El Salvador (+503). De otro país, con + y su código: +1 305 555 1234. Vacío si aún no lo tiene.</div>
+
+    <div class="err" id="fErr"></div>
+    <div class="botones">
+      <button class="btn-g" type="button" id="fCancel">Cancelar</button>
+      <button class="btn-v" type="submit" id="fOk">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+// --- EDITABLES -------------------------------------------------------------
+// Dominio con el que se arman los enlaces de invitación (sin barra final).
+const SITE_URL = "https://wedding-invite-4a7.pages.dev";
+
+// {nombre} {url} {codigo} {asientos_frase}. Igual que PLANTILLA en
+// ../backend/whatsapp_links.py. Solo emoji del BMP (✨ ❤️ ♥ ★ ✔ ☀): los modernos
+// (💍 🤍 🥂 🎉) llegan rotos por el enlace wa.me.
+const PLANTILLA = `¡Hola {nombre}! ✨
+
+Nos casamos el 28 de noviembre de 2026 en Sonsonate, y nos encantaría contar con su presencia.
+
+Aquí está su invitación:
+{url}
+
+Tienen {asientos_frase} a su nombre. El enlace ya lleva su código de acceso ({codigo}), así que solo deben confirmar antes del 25 de octubre de 2026.
+
+¡Los esperamos con mucho cariño! ❤️`;
+// ---------------------------------------------------------------------------
+
+const API = '/api/invitados';
+const KEY = 'wi-admin-token';   // la misma que usa /admin.html
+const CLAVE = 'wi-envios';      // marcas de "enviado" (por navegador)
+const $ = id => document.getElementById(id);
+
+let INVITADOS = [];
+let RESALTAR = null;            // código recién guardado
+let EDIT = null;                // invitado que se está editando (null = nuevo)
+
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CLAVE) || '{}'); } catch(e) { estado = {}; }
+const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch(e){} };
+const enviado = c => !!(estado[c] && estado[c].enviado);
+
+const asientosFrase = n => n === 1 ? '1 asiento reservado' : `${n} asientos reservados`;
+
+function preparar(g){
+  const url = `${SITE_URL}/?c=${g.codigo}`;
+  return {
+    nombre: g.nombre, codigo: g.codigo, asientos: g.asientos,
+    tel: g.telefono || '', resp: g.responsable || '', url,
+    respondio: g.actualizado_en != null, asiste: g.asiste, personas: g.personas,
+    msg: PLANTILLA.replaceAll('{nombre}', g.nombre).replaceAll('{url}', url)
+      .replaceAll('{codigo}', g.codigo).replaceAll('{asientos_frase}', asientosFrase(g.asientos)),
+  };
+}
+
+// --- API -------------------------------------------------------------------
+async function api(payload){
+  const res = await fetch(API, { method:'POST', headers:{ 'content-type':'application/json' },
+    body: JSON.stringify({ token: localStorage.getItem(KEY), ...payload }) });
+  const j = await res.json().catch(() => ({}));
+  if (res.status === 401){ localStorage.removeItem(KEY); mostrarLogin('Contraseña incorrecta.'); throw new Error('401'); }
+  return { res, j };
+}
+
+async function cargar(){
+  if (!localStorage.getItem(KEY)){ mostrarLogin(); return; }
+  try {
+    const { res, j } = await api({ op:'list' });
+    if (res.status === 500 && j.error === 'not_configured'){ mostrarLogin('Falta configurar ADMIN_TOKEN en el servidor.'); return; }
+    if (!res.ok || !j.ok){ mostrarLogin('No se pudo cargar. Inténtelo de nuevo.'); return; }
+    INVITADOS = j.invitados.map(preparar);
+    llenarResponsables();
+    $('login').hidden = true; $('app').hidden = false;
+    render();
+  } catch(e){ if (e.message !== '401') mostrarLogin('Sin conexión. Revise su internet.'); }
+}
+
+function mostrarLogin(msg){ $('app').hidden = true; $('login').hidden = false; $('loginErr').textContent = msg || ''; }
+
+// --- envío -----------------------------------------------------------------
+function enlace(inv){
+  const t = encodeURIComponent(inv.msg);
+  return $('modo').value === 'web'
+    ? `https://web.whatsapp.com/send?phone=${inv.tel}&text=${t}`
+    : `https://wa.me/${inv.tel}?text=${t}`;
+}
+
+function copiar(texto, boton){
+  const ok = () => { const a = boton.textContent; boton.textContent = '¡Copiado!';
+                     setTimeout(() => boton.textContent = a, 1400); };
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(texto).then(ok).catch(() => copiarFallback(texto, ok));
+  } else copiarFallback(texto, ok);
+}
+function copiarFallback(texto, ok){
+  const ta = document.createElement('textarea');
+  ta.value = texto; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); ok(); } catch(e){ alert('No se pudo copiar. Selecciónelo a mano.'); }
+  document.body.removeChild(ta);
+}
+
+function marcar(codigo, valor){
+  if (valor) estado[codigo] = { enviado:true, fecha:new Date().toISOString() };
+  else delete estado[codigo];
+  guardar(); render();
+}
+
+function fila(inv, conAcciones){
+  const tr = document.createElement('tr');
+  if (enviado(inv.codigo)) tr.className = 'enviado';
+  if (inv.codigo === RESALTAR) tr.classList.add('nuevo');
+
+  const tdN = document.createElement('td');
+  const nom = document.createElement('div');
+  nom.className = 'nombre'; nom.textContent = inv.nombre;
+  tdN.appendChild(nom);
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  meta.textContent = inv.asientos === 1 ? '1 asiento' : inv.asientos + ' asientos';
+  if (estado[inv.codigo] && estado[inv.codigo].fecha){
+    meta.textContent += ' · enviado ' + new Date(estado[inv.codigo].fecha).toLocaleDateString('es-SV');
+  }
+  tdN.appendChild(meta);
+  if (inv.resp){
+    const chip = document.createElement('span');
+    chip.className = 'chip'; chip.textContent = 'invita ' + inv.resp;
+    tdN.appendChild(chip);
+  }
+  if (inv.respondio){
+    const chip = document.createElement('span');
+    chip.className = inv.asiste ? 'chip resp' : 'chip no';
+    chip.textContent = inv.asiste ? `confirmó ${inv.personas}` : 'no asistirá';
+    tdN.appendChild(chip);
+  }
+  tr.appendChild(tdN);
+
+  const tdC = document.createElement('td');
+  const cod = document.createElement('code'); cod.textContent = inv.codigo;
+  tdC.appendChild(cod); tr.appendChild(tdC);
+
+  const tdT = document.createElement('td');
+  tdT.className = 'meta'; tdT.textContent = inv.tel ? '+' + inv.tel : '—';
+  tr.appendChild(tdT);
+
+  const tdA = document.createElement('td');
+  const acc = document.createElement('div'); acc.className = 'acc';
+
+  if (conAcciones){
+    const b = document.createElement('button');
+    b.className = 'btn-w'; b.type = 'button';
+    b.textContent = enviado(inv.codigo) ? 'Abrir de nuevo' : 'Abrir WhatsApp';
+    b.onclick = () => { window.open(enlace(inv), '_blank', 'noopener'); marcar(inv.codigo, true); };
+    acc.appendChild(b);
+  }
+
+  const bc = document.createElement('button');
+  bc.className = 'btn-g'; bc.type = 'button'; bc.textContent = 'Copiar mensaje';
+  bc.onclick = () => copiar(inv.msg, bc);
+  acc.appendChild(bc);
+
+  const be = document.createElement('button');
+  be.className = 'btn-g'; be.type = 'button'; be.textContent = 'Editar';
+  be.onclick = () => abrirForm(inv);
+  acc.appendChild(be);
+
+  if (conAcciones){
+    const lb = document.createElement('label');
+    lb.className = 'meta'; lb.style.display = 'flex'; lb.style.alignItems = 'center'; lb.style.gap = '4px';
+    const ck = document.createElement('input');
+    ck.type = 'checkbox'; ck.checked = enviado(inv.codigo);
+    ck.onchange = () => marcar(inv.codigo, ck.checked);
+    lb.appendChild(ck); lb.appendChild(document.createTextNode('enviado'));
+    acc.appendChild(lb);
+  }
+
+  tdA.appendChild(acc); tr.appendChild(tdA);
+  return tr;
+}
+
+function render(){
+  const q = $('q').value.trim().toLowerCase();
+  const f = $('filtro').value;
+  const r = $('resp').value;
+  const deQuien = i => r === 'todos' || i.resp === r;
+  const conTel = INVITADOS.filter(i => i.tel);
+  const sinTel = INVITADOS.filter(i => !i.tel);
+  const busca = i => !q || i.nombre.toLowerCase().includes(q) || i.codigo.toLowerCase().includes(q);
+
+  const visibles = conTel.filter(i => {
+    if (!deQuien(i) || !busca(i)) return false;
+    if (f === 'pendientes') return !enviado(i.codigo);
+    if (f === 'enviados')   return enviado(i.codigo);
+    if (f === 'sinresp')    return !i.respondio;
+    return true;
+  });
+
+  const tb = $('lista');
+  tb.textContent = '';
+  visibles.forEach(i => tb.appendChild(fila(i, true)));
+  $('vacio').hidden = visibles.length > 0;
+
+  // El avance cuenta solo lo que toca el filtro de responsable elegido.
+  const universo = conTel.filter(deQuien);
+  $('n-env').textContent = universo.filter(i => enviado(i.codigo)).length;
+  $('n-tot').textContent = universo.length;
+  const faltanTel = sinTel.filter(deQuien).length;
+  $('n-pend').textContent = faltanTel ? `(${faltanTel} sin teléfono)` : '';
+
+  const sinVisibles = sinTel.filter(i => deQuien(i) && busca(i));
+  $('bloque-sin').hidden = sinVisibles.length === 0;
+  const ts = $('lista-sin');
+  ts.textContent = '';
+  sinVisibles.forEach(i => ts.appendChild(fila(i, false)));
+}
+
+function llenarResponsables(){
+  const sel = $('resp');
+  const actual = sel.value;
+  sel.length = 1;  // deja "Ambos"
+  [...new Set(INVITADOS.map(i => i.resp).filter(Boolean))].sort().forEach(r => {
+    const o = document.createElement('option');
+    o.value = r; o.textContent = 'Invita ' + r;
+    sel.appendChild(o);
+  });
+  if (INVITADOS.some(i => !i.resp)){
+    const o = document.createElement('option');
+    o.value = ''; o.textContent = 'Sin responsable';
+    sel.appendChild(o);
+  }
+  sel.value = [...sel.options].some(o => o.value === actual) ? actual : 'todos';
+}
+
+// --- agregar / modificar invitado ------------------------------------------
+const dlg = $('dlg');
+
+function abrirForm(inv){
+  EDIT = inv || null;
+  $('fTitulo').textContent = inv ? 'Modificar invitado' : 'Nuevo invitado';
+  $('fSub').textContent = inv
+    ? `Código ${inv.codigo} (no cambia)` + (inv.respondio && inv.asiste ? ` · confirmó ${inv.personas}` : '')
+    : 'Se le asignará un código nuevo al guardar.';
+  $('fNombre').value = inv ? inv.nombre : '';
+  $('fAsientos').value = inv ? inv.asientos : 2;
+  $('fResp').value = inv ? inv.resp : ($('resp').value !== 'todos' ? $('resp').value : '');
+  // Con '+' para que el servidor no le vuelva a anteponer +503.
+  $('fTel').value = inv && inv.tel ? '+' + inv.tel : '';
+  $('fErr').textContent = '';
+  dlg.showModal();
+  $('fNombre').focus();
+}
+
+$('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('fErr').textContent = '';
+  $('fOk').disabled = true;
+  try {
+    const { res, j } = await api({ op:'save', invitado:{
+      codigo: EDIT ? EDIT.codigo : undefined,
+      nombre: $('fNombre').value, asientos: $('fAsientos').value,
+      telefono: $('fTel').value, responsable: $('fResp').value,
+    }});
+    if (!res.ok || !j.ok){ $('fErr').textContent = j.mensaje || 'No se pudo guardar. Inténtelo de nuevo.'; return; }
+    dlg.close();
+    RESALTAR = j.codigo;
+    const ok = $('okMsg');
+    ok.textContent = j.nuevo
+      ? `Invitado agregado: ${$('fNombre').value.trim()} · código ${j.codigo}. Ya puede enviarle la invitación (fila resaltada).`
+      : `Cambios guardados para ${$('fNombre').value.trim()} (${j.codigo}).`;
+    ok.hidden = false;
+    $('q').value = ''; $('filtro').value = 'todos';
+    await cargar();
+    const tr = document.querySelector('tr.nuevo');
+    if (tr) tr.scrollIntoView({ block:'center', behavior:'smooth' });
+  } catch(e){
+    if (e.message !== '401') $('fErr').textContent = 'Sin conexión. Revise su internet.';
+    else dlg.close();
+  } finally { $('fOk').disabled = false; }
+});
+$('fCancel').onclick = () => dlg.close();
+$('nuevo').onclick = () => abrirForm(null);
+
+// --- resto de eventos -------------------------------------------------------
+$('loginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('pass').value.trim();
+  if (!v) return;
+  localStorage.setItem(KEY, v);
+  $('pass').value = '';
+  cargar();
+});
+$('salir').onclick = () => { localStorage.removeItem(KEY); mostrarLogin(); };
+$('recargar').onclick = cargar;
+
+$('exportar').onclick = () => {
+  const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const filas = [['Familia','Codigo','Telefono','Responsable','Enviado','FechaEnvio']].concat(
+    INVITADOS.map(i => [i.nombre, i.codigo, i.tel, i.resp,
+      enviado(i.codigo) ? 'si' : 'no',
+      (estado[i.codigo] && estado[i.codigo].fecha) || '']));
+  const csv = '﻿' + filas.map(r => r.map(esc).join(',')).join('\r\n');  // BOM: Excel
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' }));
+  a.download = 'envios.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+$('reset').onclick = () => {
+  if (confirm('¿Borrar todas las marcas de "enviado"? El avance se pierde.')){
+    estado = {}; guardar(); render();
+  }
+};
+
+['q','filtro','modo','resp'].forEach(id => {
+  $(id).addEventListener(id === 'q' ? 'input' : 'change', render);
+});
+
+cargar();
+</script>
+</body>
+</html>

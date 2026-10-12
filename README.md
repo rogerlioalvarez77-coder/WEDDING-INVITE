@@ -82,7 +82,7 @@ Luego abre `http://localhost:3000` (o `:8000`). O usa la extensión **Live Serve
 Todo el contenido está dentro de `index.html` (y `invitacion-scroll.html`). Ábrelo con cualquier editor de texto (VS Code, Bloc de notas), busca el texto y cámbialo. **Guarda y recarga.**
 
 ### Textos, fechas, horas y lugares
-Busca la frase que quieres cambiar (por ejemplo `3:00 P.M.`, `Parroquia Nuestra Señora de la Asunción`, `15 de octubre de 2026`) y edítala directamente.
+Busca la frase que quieres cambiar (por ejemplo `3:00 P.M.`, `Parroquia Nuestra Señora de la Asunción`, `25 de octubre de 2026`) y edítala directamente.
 
 ### Enlaces de Google Maps / Waze
 Busca `maps.app.goo.gl` o `waze.com` y reemplaza la URL dentro de `href="..."`.

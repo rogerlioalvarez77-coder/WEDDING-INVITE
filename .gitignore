@@ -17,6 +17,8 @@ seed.sql
 respuestas.json
 envios.html
 envios.csv
+# ...salvo la página pública de envíos: no trae datos, los pide a /api/invitados.
+!/public/envios.html
 
 # --- Sistema ---
 .DS_Store
